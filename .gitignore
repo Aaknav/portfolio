@@ -23,6 +23,13 @@ pnpm-debug.log*
 .vscode/
 .idea/
 
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
 # Misc
 *.log
 .cache/
