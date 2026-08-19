@@ -103,7 +103,7 @@ export function Nav() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label="Open menu"
-            className="flex size-10 items-center justify-center rounded-[6px] border border-border"
+            className="flex size-10 items-center justify-center rounded-md border border-border-strong"
           >
             <span aria-hidden="true" className="flex flex-col gap-1.5">
               <span className="block h-px w-5 bg-ink" />
@@ -135,7 +135,7 @@ export function Nav() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="flex size-10 items-center justify-center rounded-[6px] border border-border text-body-lg"
+                className="flex size-10 items-center justify-center rounded-md border border-border-strong text-body-lg"
               >
                 <span aria-hidden="true">×</span>
               </button>

@@ -13,7 +13,7 @@ export function Work() {
             id="work-heading"
             eyebrow="Selected work"
             title="Built and shipped"
-            lede="Two systems in production — one that runs a company's support operation, one that brings a business its customers."
+            lede="Two systems in production — one that runs a company’s support operation, one that brings a business its customers."
           />
         </Reveal>
 

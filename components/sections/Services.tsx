@@ -28,7 +28,7 @@ const services = [
   {
     name: "Ongoing Support & Maintenance",
     outcome:
-      "Fixes, updates and improvements after launch — the relationship doesn't end at deploy.",
+      "Fixes, updates and improvements after launch — the relationship doesn’t end at deploy.",
     examples: "Bug fixes · small feature additions · dependency upgrades",
   },
 ];

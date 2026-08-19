@@ -19,6 +19,9 @@
   --ink: #1c1a17;
   --ink-muted: #5b564d;
   --border: #e7e3da;
+  /* Boundaries of interactive elements (buttons, inputs) need 3:1 against the
+     surface to meet WCAG 1.4.11 — the hairline --border does not carry that. */
+  --border-strong: #b9b2a4;
   --accent: #b5602a;
   --accent-hover: #98501f;
   --accent-ink: #ffffff;
@@ -37,6 +40,7 @@
     --ink: #f3f1ec;
     --ink-muted: #b6b0a4;
     --border: #2e2b27;
+    --border-strong: #5c554b;
     --accent: #d97a3d;
     --accent-hover: #e89055;
     --accent-ink: #1b1917;
@@ -55,6 +59,7 @@
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);

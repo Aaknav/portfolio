@@ -59,15 +59,15 @@ export const projects: Project[] = [
       "Full ticket lifecycle — typed Bug / Query / Improvement / New Feature, four priorities, and a New → Acknowledged → In Progress → Pending Client → Resolved → Closed flow with reopen",
       "A client-visible conversation thread kept structurally separate from internal work notes",
       "Attachments, collaborators, and a complete activity trail on every ticket",
-      "Email intake — a client's reply becomes a ticket message automatically; unrecognised senders get their own numbering bucket",
+      "Email intake — a client’s reply becomes a ticket message automatically; unrecognised senders get their own numbering bucket",
       "Automatic client notification on client-facing status changes, plus a one-time first-response email",
       "Three access tiers — owner, manager, and client contact scoped to their own divisions — enforced server-side",
-      "Realtime ticket updates over Socket.IO, scoped so only the ticket's owner, team and collaborators receive them",
+      "Realtime ticket updates over Socket.IO, scoped so only the ticket’s owner, team and collaborators receive them",
       "An admin dashboard with KPI tiles, a created-vs-resolved time series, and breakdowns by status, priority, type and client",
       "Invite-based onboarding for staff and client contacts, with time-limited set-password links",
     ],
     engineering:
-      "This is not a CRUD app with a login screen. Access control is enforced twice — once as query filters, so a client's ticket list can never return another client's rows, and again per document, so a client cannot reach a foreign ticket by guessing its ID. Internal work notes sit at a permission level clients are structurally incapable of reading, rather than being hidden by the interface. Ticket numbers are allocated through an atomic, transaction-safe counter instead of a max()+1 scan, so concurrent creation cannot collide. The backend carries 243 tests covering tenant isolation, reply threading, invite flows and permission edge cases, and ships with its own architecture reference and production runbooks.",
+      "This is not a CRUD app with a login screen. Access control is enforced twice — once as query filters, so a client’s ticket list can never return another client’s rows, and again per document, so a client cannot reach a foreign ticket by guessing its ID. Internal work notes sit at a permission level clients are structurally incapable of reading, rather than being hidden by the interface. Ticket numbers are allocated through an atomic, transaction-safe counter instead of a max()+1 scan, so concurrent creation cannot collide. The backend carries 243 tests covering tenant isolation, reply threading, invite flows and permission edge cases, and ships with its own architecture reference and production runbooks.",
     stack: {
       frontend: ["Next.js", "React", "TypeScript", "Zustand", "Socket.IO"],
       backend: ["Frappe", "Python", "MariaDB", "Redis"],

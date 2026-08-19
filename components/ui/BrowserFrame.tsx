@@ -18,7 +18,7 @@ export function BrowserFrame({
   label?: string;
 }) {
   return (
-    <figure className="overflow-hidden rounded-[12px] border border-border bg-surface shadow-[var(--shadow-md)]">
+    <figure className="overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-md)]">
       <div className="flex items-center gap-2 border-b border-border px-4 py-3">
         <span className="flex gap-1.5" aria-hidden="true">
           <span className="size-2.5 rounded-full bg-border" />
@@ -31,7 +31,7 @@ export function BrowserFrame({
       </div>
 
       {image.pending ? (
-        <div className="flex aspect-[16/10] flex-col items-center justify-center gap-3 bg-surface-sunken px-6 text-center">
+        <div className="flex min-h-[200px] flex-col items-center justify-center gap-3 bg-surface-sunken px-6 py-16 text-center">
           <span className="label text-ink-muted">Screenshot pending</span>
           <span className="text-body-sm measure-tight text-ink-muted">
             {image.alt}

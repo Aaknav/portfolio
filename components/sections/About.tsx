@@ -11,7 +11,11 @@ export function About() {
     >
       <div className="mx-auto max-w-6xl">
         <Reveal>
-          <SectionHeading id="about-heading" eyebrow="About" title="Who you'd be working with" />
+          <SectionHeading
+            id="about-heading"
+            eyebrow="About"
+            title="Who you’d be working with"
+          />
         </Reveal>
 
         <Reveal delay={0.05}>

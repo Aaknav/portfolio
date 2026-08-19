@@ -9,7 +9,7 @@ const steps = [
   {
     n: "01",
     name: "Discover",
-    body: "A short call to understand the problem, not just the feature list — what's actually costing you time or customers today.",
+    body: "A short call to understand the problem, not just the feature list — what’s actually costing you time or customers today.",
   },
   {
     n: "02",
@@ -34,7 +34,7 @@ const steps = [
   {
     n: "06",
     name: "Support",
-    body: "Available after launch for fixes and follow-on work. The relationship doesn't end at deploy.",
+    body: "Available after launch for fixes and follow-on work. The relationship doesn’t end at deploy.",
   },
 ];
 
@@ -51,7 +51,7 @@ export function Process() {
             id="process-heading"
             eyebrow="Process"
             title="What happens after you get in touch"
-            lede="No mystery, no black box. Here's the sequence every project follows."
+            lede="No mystery, no black box. Here’s the sequence every project follows."
           />
         </Reveal>
 

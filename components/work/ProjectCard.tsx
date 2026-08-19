@@ -18,7 +18,7 @@ export function ProjectCard({ project }: { project: Project }) {
       ) : null}
 
       <div>
-        <header className="flex flex-wrap items-baseline justify-between gap-3">
+        <header className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h3 className="text-display-md">{project.name}</h3>
           <span className="label text-ink-muted">{project.year}</span>
         </header>

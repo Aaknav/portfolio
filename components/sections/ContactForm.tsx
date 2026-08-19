@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 const initialState: ContactState = { status: "idle" };
 
 const fieldClass =
-  "w-full rounded-[6px] border border-border bg-surface px-3 py-2.5 text-body " +
+  "w-full rounded-md border border-border-strong bg-surface px-3 py-2.5 text-body " +
   "text-ink transition-colors placeholder:text-ink-muted/70 focus:border-accent";
 
 const projectTypes = [
@@ -58,7 +58,7 @@ export function ContactForm() {
     return (
       <div
         role="status"
-        className="rounded-[12px] border border-border bg-surface p-8"
+        className="rounded-xl border border-border bg-surface p-8"
       >
         <p className="text-display-md">Message sent.</p>
         <p className="mt-3 text-body text-ink-muted">{state.message}</p>
@@ -187,7 +187,7 @@ export function ContactForm() {
           required
           rows={6}
           className={`${fieldClass} resize-y`}
-          placeholder="The problem you're trying to solve, roughly what you have in mind, and anything already in place."
+          placeholder="The problem you’re trying to solve, roughly what you have in mind, and anything already in place."
           aria-invalid={!!state.errors?.message}
           aria-describedby={state.errors?.message ? "message-error" : undefined}
         />
