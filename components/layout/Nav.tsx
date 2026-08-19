@@ -75,7 +75,7 @@ export function Nav() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
-          className="font-[family-name:var(--font-display)] text-[1.375rem] font-medium tracking-tight"
+          className="font-display text-[1.375rem] font-medium tracking-tight"
         >
           {site.brand}
         </Link>
@@ -147,7 +147,7 @@ export function Nav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="border-b border-border py-4 font-[family-name:var(--font-display)] text-[1.75rem]"
+                  className="border-b border-border py-4 font-display text-[1.75rem]"
                 >
                   {link.label}
                 </Link>

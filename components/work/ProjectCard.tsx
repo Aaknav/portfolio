@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Project } from "@/data/projects";
 import { BrowserFrame } from "@/components/ui/BrowserFrame";
 import { TagRow } from "@/components/ui/TagChip";
@@ -5,8 +6,7 @@ import { ButtonLink } from "@/components/ui/Button";
 
 /**
  * Compact treatment for non-featured projects. Deliberately lighter than
- * FeaturedProject — image beside copy, no full panel — so it never competes
- * with the flagship case study above it.
+ * FeaturedProject — image beside copy — so it never competes with the flagship.
  *
  * At two projects this is a single row; at ten it is a grid. Same component.
  */
@@ -18,30 +18,19 @@ export function ProjectCard({ project }: { project: Project }) {
       ) : null}
 
       <div>
-        <header className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h3 className="text-display-md">{project.name}</h3>
-          <span className="label text-ink-muted">{project.year}</span>
-        </header>
+        <p className="label text-accent">
+          {project.name} · {project.year}
+        </p>
 
-        <p className="mt-3 text-body text-ink-muted">{project.solution}</p>
+        <h3 className="mt-4 text-display-md">{project.headline}</h3>
 
-        {project.engineering ? (
-          <p className="mt-4 text-body-sm text-ink-muted">
-            {project.engineering}
-          </p>
-        ) : null}
+        <p className="mt-3 text-body text-ink-muted">{project.summary}</p>
 
         <div className="mt-6">
-          <TagRow
-            items={[
-              ...project.stack.frontend.slice(0, 2),
-              ...project.stack.backend.slice(0, 2),
-              ...project.stack.infra.slice(0, 1),
-            ]}
-          />
+          <TagRow items={project.primaryStack} />
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap items-center gap-3">
           {project.links.live ? (
             <ButtonLink href={project.links.live} variant="secondary">
               View live <span aria-hidden="true">↗</span>
@@ -53,6 +42,17 @@ export function ProjectCard({ project }: { project: Project }) {
             </ButtonLink>
           ) : null}
         </div>
+
+        {project.caseStudy ? (
+          <p className="mt-5">
+            <Link
+              href={`/work/${project.slug}`}
+              className="text-body-sm text-ink underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-accent"
+            >
+              Read the case study<span aria-hidden="true"> →</span>
+            </Link>
+          </p>
+        ) : null}
       </div>
     </article>
   );

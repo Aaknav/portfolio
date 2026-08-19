@@ -1,113 +1,142 @@
+import Link from "next/link";
+import Image from "next/image";
 import type { Project } from "@/data/projects";
-import { BrowserFrame } from "@/components/ui/BrowserFrame";
 import { TagRow } from "@/components/ui/TagChip";
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/motion/Reveal";
+import { HelpdeskPreview } from "@/components/work/HelpdeskPreview";
+import { OutcomeVisual } from "@/components/work/OutcomeVisual";
 
+/**
+ * Homepage treatment for the flagship project: see the product, then the
+ * outcome, then just enough proof. The depth lives on /work/[slug].
+ */
 export function FeaturedProject({ project }: { project: Project }) {
+  const image = project.images[0];
+  const showReconstruction = image?.pending;
+
   return (
-    <article className="rounded-xl border border-border bg-surface p-6 md:p-12">
+    <article>
+      {/* The product, at the top and at full width — the largest thing here. */}
       <Reveal>
-        <header className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h3 className="text-display-md md:text-display-lg">{project.name}</h3>
-          <span className="label text-ink-muted">{project.year}</span>
-        </header>
+        <figure className="group overflow-hidden rounded-xl border border-border bg-surface shadow-md">
+          <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+            <span className="flex gap-1.5" aria-hidden="true">
+              <span className="size-2.5 rounded-full bg-border" />
+              <span className="size-2.5 rounded-full bg-border" />
+              <span className="size-2.5 rounded-full bg-border" />
+            </span>
+            <span className="label ml-2 truncate text-ink-muted">
+              {project.name}
+            </span>
+          </div>
+
+          <div className="transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.01]">
+            {showReconstruction ? (
+              <HelpdeskPreview />
+            ) : (
+              <Image
+                src={image.src}
+                alt={image.alt}
+                width={1600}
+                height={1000}
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 92vw, 1100px"
+                className="h-auto w-full"
+              />
+            )}
+          </div>
+        </figure>
+
+        {showReconstruction ? (
+          <figcaption className="mt-3 text-body-sm text-ink-muted">
+            Interface representation — the production system is client-access
+            only.
+          </figcaption>
+        ) : null}
+      </Reveal>
+
+      {/* Identity and the outcome, in three lines. */}
+      <Reveal className="mt-10">
+        <p className="label text-accent">
+          {project.name} · {project.year}
+        </p>
+        <h3 className="mt-3 max-w-3xl text-display-md md:text-display-lg">
+          {project.headline}
+        </h3>
         <p className="measure mt-3 text-body-lg text-ink-muted">
-          {project.tagline}
+          {project.summary}
         </p>
       </Reveal>
 
-      {project.images[0] ? (
-        <Reveal className="mt-10">
-          <BrowserFrame image={project.images[0]} label={project.name} />
-        </Reveal>
+      {/* Three outcomes, each readable at a glance. */}
+      {project.outcomes ? (
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {project.outcomes.map((outcome, index) => (
+            <Reveal key={outcome.title} delay={index * 0.05}>
+              <div>
+                <OutcomeVisual kind={outcome.visual} />
+                <h4 className="mt-3 text-body-lg text-ink">{outcome.title}</h4>
+                <p className="mt-1 text-body-sm text-ink-muted">
+                  {outcome.body}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       ) : null}
 
-      <Reveal className="mt-12">
-        <div className="grid gap-8 md:grid-cols-2 md:gap-12">
-          <div>
-            <h4 className="label text-accent">Problem</h4>
-            <p className="mt-3 text-body text-ink-muted">{project.problem}</p>
-          </div>
-          <div>
-            <h4 className="label text-accent">Solution</h4>
-            <p className="mt-3 text-body text-ink-muted">{project.solution}</p>
-          </div>
+      {/* Credibility and technology share one strip — neither leads. */}
+      <Reveal className="mt-10">
+        <div className="flex flex-col gap-3 border-y border-border py-4 lg:flex-row lg:items-center lg:justify-between">
+          {project.proofPoints ? (
+            <ul className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              {project.proofPoints.map((point, index) => (
+                <li key={point} className="flex items-center gap-3">
+                  {index > 0 ? (
+                    <span aria-hidden="true" className="text-border-strong">
+                      ·
+                    </span>
+                  ) : null}
+                  <span className="label text-ink-muted">{point}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <TagRow items={project.primaryStack} />
         </div>
       </Reveal>
 
-      {project.features ? (
-        <Reveal className="mt-12">
-          <h4 className="label text-accent">What it does</h4>
-          <ul className="mt-4 grid gap-x-12 gap-y-3 md:grid-cols-2">
-            {project.features.map((feature) => (
-              <li
-                key={feature}
-                className="flex gap-3 text-body-sm text-ink-muted"
-              >
-                <span aria-hidden="true" className="mt-2 size-1 shrink-0 bg-accent" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-      ) : null}
-
-      {project.engineering ? (
-        <Reveal className="mt-12">
-          <div className="border-l-2 border-accent pl-6">
-            <h4 className="label text-accent">Engineering</h4>
-            <p className="measure mt-3 text-body text-ink">
-              {project.engineering}
+      {/* Conversion, in the project's own voice — a row, not another card. */}
+      <Reveal className="mt-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-display text-body-lg text-ink">
+              Need a system like this?
             </p>
+            {project.caseStudy ? (
+              <p className="mt-1">
+                <Link
+                  href={`/work/${project.slug}`}
+                  className="text-body-sm text-ink-muted underline decoration-border-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-accent"
+                >
+                  Read the full case study
+                  <span aria-hidden="true"> →</span>
+                </Link>
+              </p>
+            ) : null}
           </div>
-        </Reveal>
-      ) : null}
 
-      {project.images[1] ? (
-        <Reveal className="mt-12">
-          <BrowserFrame image={project.images[1]} label={project.name} />
-        </Reveal>
-      ) : null}
-
-      <Reveal className="mt-12">
-        <div className="grid gap-6 border-t border-border pt-8 sm:grid-cols-3">
-          <div>
-            <h4 className="label text-ink-muted">Frontend</h4>
-            <div className="mt-3">
-              <TagRow items={project.stack.frontend} />
-            </div>
-          </div>
-          <div>
-            <h4 className="label text-ink-muted">Backend</h4>
-            <div className="mt-3">
-              <TagRow items={project.stack.backend} />
-            </div>
-          </div>
-          <div>
-            <h4 className="label text-ink-muted">Infrastructure</h4>
-            <div className="mt-3">
-              <TagRow items={project.stack.infra} />
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          {project.links.live ? (
-            <ButtonLink href={project.links.live} variant="secondary">
-              View live <span aria-hidden="true">↗</span>
+          <div className="flex shrink-0 flex-wrap gap-3">
+            {project.links.repo ? (
+              <ButtonLink href={project.links.repo} variant="secondary">
+                View code <span aria-hidden="true">↗</span>
+              </ButtonLink>
+            ) : null}
+            <ButtonLink href="#contact">
+              Start a project <span aria-hidden="true">→</span>
             </ButtonLink>
-          ) : null}
-          {project.links.repo ? (
-            <ButtonLink href={project.links.repo} variant="secondary">
-              View code <span aria-hidden="true">↗</span>
-            </ButtonLink>
-          ) : null}
-          {project.links.liveNote ? (
-            <p className="text-body-sm text-ink-muted">
-              {project.links.liveNote}
-            </p>
-          ) : null}
+          </div>
         </div>
       </Reveal>
     </article>

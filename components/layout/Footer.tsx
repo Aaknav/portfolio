@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="border-t border-border px-6 py-12">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="font-[family-name:var(--font-display)] text-body-lg">
+          <p className="font-display text-body-lg">
             {site.brand}
           </p>
           <p className="mt-2 text-body-sm text-ink-muted">
