@@ -7,26 +7,49 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:e2e"
   },
   "dependencies": {
+    "@t3-oss/env-nextjs": "^0.13.11",
     "geist": "^1.7.2",
-    "motion": "^13.1.0",
+    "motion": "^13.1.1",
     "next": "^16.3.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "resend": "^6.20.0",
+    "resend": "^6.21.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@next/eslint-plugin-next": "^16.3.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.5",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^10.8.1",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "jsdom": "^30.0.1",
+    "lefthook": "^2.1.10",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.11"
+  },
+  "allowScripts": {
+    "lefthook@2.1.10": true
   }
 }

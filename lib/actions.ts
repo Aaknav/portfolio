@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { Resend } from "resend";
+import { env } from "@/lib/env";
 import { site } from "@/lib/site";
 
 /**
@@ -20,8 +21,16 @@ const schema = z.object({
     .trim()
     .min(20, "Tell me a little more — 20 characters or so")
     .max(5000),
-  /** Honeypot: bots fill hidden fields, people don't. */
-  website: z.string().max(0).optional(),
+  /**
+   * Honeypot: bots fill hidden fields, people don't.
+   *
+   * Deliberately permissive. Rejecting a filled honeypot here would return a
+   * validation error against an invisible input — which tells a bot exactly
+   * which field is the trap, and dead-ends any human whose autofill touched
+   * it behind "Please check the fields below" with nothing visible to fix.
+   * The silent bail happens after parsing instead.
+   */
+  website: z.string().optional(),
 });
 
 export type ContactState = {
@@ -59,7 +68,7 @@ export async function submitContact(
   // Silently accept honeypot hits so bots get no signal.
   if (data.website) return { status: "success" };
 
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = env.RESEND_API_KEY;
   if (!apiKey) {
     console.error("RESEND_API_KEY is not set — enquiry was not delivered.");
     return {
@@ -71,8 +80,8 @@ export async function submitContact(
   try {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from: process.env.CONTACT_FROM_EMAIL ?? "enquiries@resend.dev",
-      to: process.env.CONTACT_TO_EMAIL ?? site.email,
+      from: env.CONTACT_FROM_EMAIL ?? "enquiries@resend.dev",
+      to: env.CONTACT_TO_EMAIL ?? site.email,
       replyTo: data.email,
       subject: `New enquiry — ${data.projectType} — ${data.name}`,
       text: [

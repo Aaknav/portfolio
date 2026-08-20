@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
 
   // Security headers. The site loads no third-party scripts, embeds nothing,
   // and is never framed — so these can all be strict.
+  // Next types `headers` as returning a Promise, so this stays async even with
+  // nothing to await.
+  // eslint-disable-next-line @typescript-eslint/require-await
   async headers() {
     return [
       {
