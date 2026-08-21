@@ -57,18 +57,19 @@ export function Process() {
 
         <ol className="mt-14 grid gap-x-12 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
           {steps.map((step, index) => (
-            <Reveal key={step.n} delay={index * 0.05}>
-              <li className="flex gap-5">
-                <span className="label shrink-0 pt-1 text-accent tabular-nums">
-                  {step.n}
-                </span>
-                <div>
-                  <h3 className="text-body-lg text-ink">{step.name}</h3>
-                  <p className="mt-2 text-body-sm text-ink-muted">
-                    {step.body}
-                  </p>
-                </div>
-              </li>
+            <Reveal
+              key={step.n}
+              delay={index * 0.05}
+              as="li"
+              className="flex gap-5"
+            >
+              <span className="label shrink-0 pt-1 text-accent tabular-nums">
+                {step.n}
+              </span>
+              <div>
+                <h3 className="text-body-lg text-ink">{step.name}</h3>
+                <p className="mt-2 text-body-sm text-ink-muted">{step.body}</p>
+              </div>
             </Reveal>
           ))}
         </ol>

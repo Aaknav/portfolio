@@ -51,20 +51,21 @@ export function Services() {
 
         <ul className="mt-14">
           {services.map((service, index) => (
-            <Reveal key={service.name} delay={index * 0.05}>
-              <li className="group grid gap-3 border-t border-border py-8 transition-colors last:border-b md:grid-cols-[1fr_1.6fr] md:gap-12">
-                <h3 className="text-display-md transition-colors group-hover:text-accent">
-                  {service.name}
-                </h3>
-                <div>
-                  <p className="measure text-body text-ink-muted">
-                    {service.outcome}
-                  </p>
-                  <p className="label mt-4 text-ink-muted">
-                    {service.examples}
-                  </p>
-                </div>
-              </li>
+            <Reveal
+              key={service.name}
+              delay={index * 0.05}
+              as="li"
+              className="group grid gap-3 border-t border-border py-8 transition-colors last:border-b md:grid-cols-[1fr_1.6fr] md:gap-12"
+            >
+              <h3 className="text-display-md transition-colors group-hover:text-accent">
+                {service.name}
+              </h3>
+              <div>
+                <p className="measure text-body text-ink-muted">
+                  {service.outcome}
+                </p>
+                <p className="label mt-4 text-ink-muted">{service.examples}</p>
+              </div>
             </Reveal>
           ))}
         </ul>

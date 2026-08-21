@@ -28,6 +28,14 @@ export function Nav() {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    /*
+     * Captured now rather than read in the cleanup: by the time cleanup runs
+     * the ref may already point at a different node (or null), and the whole
+     * point of this line is to hand focus back to the button that opened the
+     * sheet.
+     */
+    const trigger = triggerRef.current;
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpen(false);
@@ -59,7 +67,7 @@ export function Nav() {
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
-      triggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [open]);
 

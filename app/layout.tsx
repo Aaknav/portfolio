@@ -3,6 +3,7 @@ import { Fraunces } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { site } from "@/lib/site";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -95,7 +96,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

@@ -1,0 +1,26 @@
+# Local gate. Deliberately only the fast checks — the Playwright suite builds
+# the site and drives four browsers, which belongs in CI, not in the half-second
+# between you typing `git commit` and getting your prompt back.
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      glob: "*.{js,mjs,cjs,ts,mts,tsx}"
+      run: npx eslint {staged_files}
+
+    - name: typecheck
+      glob: "*.{ts,tsx}"
+      # Project-wide rather than per-file: a change in one file breaks types in
+      # another, and tsc is incremental so this stays quick.
+      run: npm run typecheck
+
+    - name: unit
+      glob: "*.{ts,tsx}"
+      # `related` runs only the tests that import the staged files.
+      run: npx vitest related {staged_files} --run --passWithNoTests
+
+pre-push:
+  jobs:
+    - name: unit
+      run: npm test

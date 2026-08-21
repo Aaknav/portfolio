@@ -22,8 +22,14 @@
   /* Boundaries of interactive elements (buttons, inputs) need 3:1 against the
      surface to meet WCAG 1.4.11 — the hairline --border does not carry that. */
   --border-strong: #b9b2a4;
-  --accent: #b5602a;
-  --accent-hover: #98501f;
+  /* Darkened from #b5602a / #98501f to clear WCAG AA. The old copper measured
+     3.97:1 as text on the tinted surfaces and 4.50:1 under white button text,
+     so every accent-coloured string on the site failed 1.4.3. These hold >=5:1
+     on all four light grounds; the hue and saturation are unchanged and the
+     7.8pt lightness step between base and hover is preserved. The dark theme
+     accent already passed and is untouched. Verified by e2e/axe.spec.ts. */
+  --accent: #9d5325;
+  --accent-hover: #7d421d;
   --accent-ink: #ffffff;
   --success: #3f7a4b;
   --danger: #b23b2e;
