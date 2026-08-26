@@ -56,8 +56,19 @@ export default async function ProjectPage({
     <>
       <Nav />
       <main id="main">
-        <article className="px-6 pt-32 pb-24 md:pt-40">
-          <div className="mx-auto max-w-4xl">
+        {/*
+          A spec sheet, not an essay.
+
+          This page used to stack six heading-paragraph-bullets blocks down a
+          single column, which is the shape of a blog post: nothing to scan, no
+          way in except reading top to bottom. The depth is worth keeping — it is
+          the whole reason the page exists — so the fix is structure rather than
+          cuts. Facts come before prose, the problem and solution are stated in
+          the site's own before/after language, and each section puts its
+          heading in a rail with its evidence as ruled rows beside it.
+        */}
+        <article className="px-6 pt-28 pb-24 md:pt-36">
+          <div className="mx-auto max-w-5xl">
             <Link
               href="/#work"
               className="label text-ink-muted transition-colors hover:text-ink"
@@ -68,7 +79,7 @@ export default async function ProjectPage({
             <p className="label mt-10 text-accent">
               {project.name} · {project.year}
             </p>
-            <h1 className="mt-4 text-display-lg md:text-display-xl">
+            <h1 className="mt-4 max-w-[20ch] text-display-lg md:text-display-xl">
               {project.headline}
             </h1>
             <p className="measure mt-5 text-body-lg text-ink-muted">
@@ -87,13 +98,25 @@ export default async function ProjectPage({
                 </ButtonLink>
               ) : null}
             </div>
+
+            {/* Facts before prose. proofPoints are the verified claims already
+                carried by the data — the homepage stopped rendering them when
+                the hero changed, and this is where they belong anyway. */}
+            {project.proofPoints?.length ? (
+              <ul className="mt-12 grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+                {project.proofPoints.map((point) => (
+                  <li key={point} className="bg-bg p-5">
+                    <span className="label text-ink">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
 
-          {/* Product visual */}
-          <div className="mx-auto mt-14 max-w-5xl">
+          <div className="mx-auto mt-12 max-w-5xl">
             {image?.pending && project.slug === "inventive-helpdesk" ? (
-              <>
-                <figure className="overflow-hidden rounded-xl border border-border bg-surface shadow-md">
+              <figure className="flex flex-col gap-3">
+                <div className="overflow-hidden border border-border bg-surface">
                   <div className="flex items-center gap-2 border-b border-border px-4 py-3">
                     <span className="flex gap-1.5" aria-hidden="true">
                       <span className="size-2.5 rounded-full bg-border" />
@@ -105,96 +128,101 @@ export default async function ProjectPage({
                     </span>
                   </div>
                   <HelpdeskPreview />
-                </figure>
-                <p className="mt-3 text-body-sm text-ink-muted">
+                </div>
+                <figcaption className="text-body-sm text-ink-muted">
                   Interface representation — the production system is
                   client-access only.
-                </p>
-              </>
+                </figcaption>
+              </figure>
             ) : image ? (
               <BrowserFrame image={image} label={project.name} />
             ) : null}
           </div>
 
-          {/* Problem and solution — the depth the homepage deliberately omits. */}
-          <div className="mx-auto mt-20 max-w-4xl">
-            <div className="grid gap-10 md:grid-cols-2">
-              <div>
-                <h2 className="label text-accent">Problem</h2>
-                <p className="mt-3 text-body text-ink-muted">
-                  {caseStudy.problem}
-                </p>
+          {/* Problem and solution in the site's own device: drained left,
+              accent right. Two plain paragraphs said the same thing without
+              showing that one replaced the other. */}
+          <div className="mx-auto mt-16 max-w-5xl">
+            <div className="grid gap-px border border-border bg-border md:grid-cols-2">
+              <div className="flex flex-col gap-3 bg-bg p-6 md:p-8">
+                <h2 className="label text-before-ink">The problem</h2>
+                <p className="text-body text-before-ink">{caseStudy.problem}</p>
               </div>
-              <div>
-                <h2 className="label text-accent">Solution</h2>
-                <p className="mt-3 text-body text-ink-muted">
-                  {caseStudy.solution}
-                </p>
+              <div className="flex flex-col gap-3 bg-surface p-6 md:p-8">
+                <h2 className="label text-accent">What replaced it</h2>
+                <p className="text-body text-ink-muted">{caseStudy.solution}</p>
               </div>
             </div>
+          </div>
 
-            <div className="mt-20 flex flex-col gap-16">
+          {/* Each section: heading in a rail, evidence as ruled rows. */}
+          <div className="mx-auto mt-20 max-w-5xl">
+            <h2 className="label text-ink-muted">Inside the build</h2>
+
+            <div className="mt-6 flex flex-col">
               {caseStudy.sections.map((section) => (
-                <section key={section.heading}>
-                  <h2 className="text-display-md">{section.heading}</h2>
-                  <p className="measure mt-4 text-body text-ink-muted">
-                    {section.body}
-                  </p>
-                  {section.points ? (
-                    <ul className="mt-5 flex flex-col gap-2.5">
-                      {section.points.map((point) => (
-                        <li
-                          key={point}
-                          className="flex gap-3 text-body-sm text-ink-muted"
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="mt-2 size-1 shrink-0 bg-accent"
-                          />
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
+                <section
+                  key={section.heading}
+                  className="grid gap-4 border-t border-border py-8 last:border-b md:grid-cols-[14rem_1fr] md:gap-10 md:py-10"
+                >
+                  <h3 className="text-display-sm md:sticky md:top-24 md:self-start">
+                    {section.heading}
+                  </h3>
+
+                  <div className="flex flex-col gap-5">
+                    <p className="measure text-body text-ink-muted">
+                      {section.body}
+                    </p>
+
+                    {section.points ? (
+                      <ul className="flex flex-col border-t border-border">
+                        {section.points.map((point) => (
+                          <li
+                            key={point}
+                            className="flex gap-3 border-b border-border py-3 text-body-sm text-ink-muted"
+                          >
+                            <span
+                              aria-hidden="true"
+                              className="mt-2 size-1 shrink-0 bg-accent"
+                            />
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
                 </section>
               ))}
             </div>
+          </div>
 
-            {/* Full stack — the homepage only shows the headline technologies. */}
-            <section className="mt-20 border-t border-border pt-10">
-              <h2 className="text-display-md">Built with</h2>
-              <div className="mt-6 grid gap-6 sm:grid-cols-3">
-                <div>
-                  <h3 className="label text-ink-muted">Frontend</h3>
-                  <div className="mt-3">
-                    <TagRow items={caseStudy.fullStack.frontend} />
-                  </div>
+          {/* Built with — the homepage only shows the headline technologies. */}
+          <div className="mx-auto mt-20 max-w-5xl">
+            <h2 className="label text-ink-muted">Built with</h2>
+            <div className="mt-6 grid gap-px border border-border bg-border sm:grid-cols-3">
+              {(
+                [
+                  ["Frontend", caseStudy.fullStack.frontend],
+                  ["Backend", caseStudy.fullStack.backend],
+                  ["Infrastructure", caseStudy.fullStack.infra],
+                ] as const
+              ).map(([layer, items]) => (
+                <div key={layer} className="flex flex-col gap-3 bg-bg p-5">
+                  <h3 className="label text-ink-muted">{layer}</h3>
+                  <TagRow items={items} />
                 </div>
-                <div>
-                  <h3 className="label text-ink-muted">Backend</h3>
-                  <div className="mt-3">
-                    <TagRow items={caseStudy.fullStack.backend} />
-                  </div>
-                </div>
-                <div>
-                  <h3 className="label text-ink-muted">Infrastructure</h3>
-                  <div className="mt-3">
-                    <TagRow items={caseStudy.fullStack.infra} />
-                  </div>
-                </div>
-              </div>
-            </section>
+              ))}
+            </div>
+          </div>
 
-            {/* Conversion */}
-            <section className="mt-20 rounded-xl border border-border bg-surface p-8 md:p-10">
-              <p className="font-display text-display-md">
-                Need something like this built?
-              </p>
-              <p className="measure mt-3 text-body text-ink-muted">
+          <div className="mx-auto mt-20 max-w-5xl">
+            <section className="flex flex-col gap-4 border-l-2 border-accent bg-surface p-8 md:p-10">
+              <p className="text-display-md">Need something like this built?</p>
+              <p className="measure text-body text-ink-muted">
                 Tell me what you&rsquo;re trying to build — I&rsquo;ll tell you
                 honestly whether I&rsquo;m the right fit.
               </p>
-              <div className="mt-7">
+              <div className="mt-3">
                 <ButtonLink href="/#contact" size="lg">
                   Start a project <span aria-hidden="true">→</span>
                 </ButtonLink>
