@@ -38,7 +38,7 @@ export function Services() {
     <section
       id="services"
       aria-labelledby="services-heading"
-      className="border-t border-border px-6 py-24 md:py-32"
+      className="border-t border-border px-6 py-14 md:py-32"
     >
       <div className="mx-auto max-w-6xl">
         <Reveal>

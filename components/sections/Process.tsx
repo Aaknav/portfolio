@@ -34,7 +34,7 @@ const steps = [
   {
     n: "06",
     name: "Support",
-    body: "Available after launch for fixes and follow-on work. The relationship doesn’t end at deploy.",
+    body: "Available after launch for fixes and follow-on work, at whatever pace you need it.",
   },
 ];
 
@@ -43,7 +43,7 @@ export function Process() {
     <section
       id="process"
       aria-labelledby="process-heading"
-      className="border-t border-border bg-surface px-6 py-24 md:py-32"
+      className="border-t border-border bg-surface px-6 py-14 md:py-32"
     >
       <div className="mx-auto max-w-6xl">
         <Reveal>
