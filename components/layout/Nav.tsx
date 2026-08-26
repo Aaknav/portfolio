@@ -104,9 +104,11 @@ export function Nav() {
           <ButtonLink href="#contact">Start a project</ButtonLink>
         </nav>
 
+        {/* No CTA here: the hero's "Start a project" sits directly below the
+            sticky bar on a phone, so the two read as the same button twice. It
+            lives in the sheet instead, where it is still one tap away. */}
         <div className="flex items-center gap-3 md:hidden">
           <ThemeToggle />
-          <ButtonLink href="#contact">Start a project</ButtonLink>
           <button
             ref={triggerRef}
             type="button"
@@ -131,7 +133,7 @@ export function Nav() {
             aria-label="Close menu"
             tabIndex={-1}
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-ink/30"
+            className="absolute inset-0 bg-scrim"
           />
           <div
             ref={sheetRef}
@@ -163,6 +165,15 @@ export function Nav() {
                   {link.label}
                 </Link>
               ))}
+
+              <ButtonLink
+                href="#contact"
+                size="lg"
+                className="mt-6"
+                onClick={() => setOpen(false)}
+              >
+                Start a project <span aria-hidden="true">→</span>
+              </ButtonLink>
             </nav>
           </div>
         </div>

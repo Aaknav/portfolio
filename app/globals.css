@@ -49,6 +49,11 @@
   --shadow-sm: 0 1px 2px rgb(18 21 28 / 0.07);
   --shadow-md: 0 10px 28px rgb(18 21 28 / 0.1);
 
+  /* Behind the mobile sheet. Always dark, in both themes — it was --ink at 30%,
+     which in dark mode is a near-white wash that brightened the page instead of
+     dimming it and left the sheet reading as a hole rather than a panel. */
+  --scrim: rgb(9 11 14 / 0.5);
+
   color-scheme: light;
 
   /* The dark palette. Declared here so the values have one home; applied by the
@@ -67,6 +72,7 @@
   --d-accent-ink: #0d1014;
   --d-success: #4ec49b;
   --d-danger: #e2685c;
+  --d-scrim: rgb(0 0 0 / 0.72);
   --d-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
   --d-shadow-md: 0 10px 28px rgb(0 0 0 / 0.55);
 }
@@ -101,7 +107,9 @@
     --accent-ink: var(--d-accent-ink);
     --success: var(--d-success);
     --danger: var(--d-danger);
-    --shadow-sm: var(--d-shadow-sm);
+    --scrim: var(--d-scrim);
+    --scrim: var(--d-scrim);
+  --shadow-sm: var(--d-shadow-sm);
     --shadow-md: var(--d-shadow-md);
   }
 }
@@ -141,6 +149,7 @@
   --color-accent-ink: var(--accent-ink);
   --color-success: var(--success);
   --color-danger: var(--danger);
+  --color-scrim: var(--scrim);
 
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
