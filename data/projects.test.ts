@@ -130,6 +130,80 @@ describe("case studies", () => {
   });
 });
 
+/**
+ * The before/after devices read straight from this data and make assumptions
+ * the type cannot express: entries are used as React keys, and BeforeAfter only
+ * styles the first three scraps. A duplicate string here surfaces as a React key
+ * error in the browser, which smoke.spec.ts turns into a four-browser failure —
+ * these turn the same mistake into a millisecond unit failure instead.
+ */
+describe("before / after devices", () => {
+  it("keeps before scraps unique and non-empty", () => {
+    each((p) => {
+      if (!p.before) return;
+      expect(new Set(p.before).size, `${p.slug}.before duplicates`).toBe(
+        p.before.length,
+      );
+      p.before.forEach((scrap, i) =>
+        expect(scrap.trim(), `${p.slug}.before[${i}]`).not.toBe(""),
+      );
+    });
+  });
+
+  it("keeps before scraps to the three BeforeAfter can style", () => {
+    each((p) => {
+      if (!p.before) return;
+      expect(p.before.length, `${p.slug}.before`).toBeLessThanOrEqual(3);
+    });
+  });
+
+  it("keeps after rows unique and fully populated", () => {
+    each((p) => {
+      if (!p.after) return;
+      const items = p.after.map((row) => row.item);
+      expect(new Set(items).size, `${p.slug}.after duplicates`).toBe(items.length);
+      p.after.forEach((row, i) => {
+        expect(row.item.trim(), `${p.slug}.after[${i}].item`).not.toBe("");
+        expect(row.state.trim(), `${p.slug}.after[${i}].state`).not.toBe("");
+      });
+    });
+  });
+
+  it("pairs before with after, since the device needs both halves", () => {
+    each((p) =>
+      expect(Boolean(p.before), `${p.slug} before/after pairing`).toBe(
+        Boolean(p.after),
+      ),
+    );
+  });
+
+  it("keeps handover rows unique and non-empty", () => {
+    each((p) => {
+      if (!p.handover) return;
+      expect(new Set(p.handover).size, `${p.slug}.handover duplicates`).toBe(
+        p.handover.length,
+      );
+      p.handover.forEach((row, i) =>
+        expect(row.trim(), `${p.slug}.handover[${i}]`).not.toBe(""),
+      );
+    });
+  });
+
+  it("gives every handover project the live link that section leads with", () => {
+    each((p) => {
+      if (!p.handover) return;
+      expect(p.links.live, `${p.slug}.links.live`).toBeTruthy();
+    });
+  });
+
+  it("gives the homepage's flagship the pair the hero renders", () => {
+    const flagship = projects.filter((p) => p.featured)[0];
+    expect(flagship, "no featured project for the hero").toBeDefined();
+    expect(flagship?.before?.length, "flagship.before").toBeGreaterThan(0);
+    expect(flagship?.after?.length, "flagship.after").toBeGreaterThan(0);
+  });
+});
+
 describe("getProject", () => {
   it("resolves every slug the site links to", () => {
     each((p) => expect(getProject(p.slug)?.slug).toBe(p.slug));
