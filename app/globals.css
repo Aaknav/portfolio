@@ -1,61 +1,129 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Design tokens.
+   Design tokens — "Before / After".
 
-   Light is defined on bare :root; dark redefines only the values under
-   prefers-color-scheme. Components are styled through these tokens and never
-   with a raw hex, so a theme change is a token change and nothing else.
+   The whole identity rests on one contrast: the disorder a client lives in
+   versus the order they get. So the palette has exactly two temperatures. The
+   "before" is drained — greys with a blue cast, no saturation at all. The
+   "after" carries the only saturated value on the site, a single electric blue.
 
-   The neutrals are deliberately warm — the page ground is paper, not #fff, and
-   the dark ground is a warm near-black, not #000. That is what lets the single
-   copper accent sit on both grounds without shifting temperature.
+   That means --accent is never decoration. If something is blue, it is the
+   result of the work.
+
+   Light is declared on bare :root and is the primary theme; dark redefines only
+   the values under prefers-color-scheme. Components are styled through the
+   tokens and never with a raw hex.
 --------------------------------------------------------------------------- */
 
 :root {
-  --bg: #faf9f6;
+  --bg: #eef0f4;
   --surface: #ffffff;
-  --surface-sunken: #f3f1ea;
-  --ink: #1c1a17;
-  --ink-muted: #5b564d;
-  --border: #e7e3da;
-  /* Boundaries of interactive elements (buttons, inputs) need 3:1 against the
-     surface to meet WCAG 1.4.11 — the hairline --border does not carry that. */
-  --border-strong: #b9b2a4;
-  /* Darkened from #b5602a / #98501f to clear WCAG AA. The old copper measured
-     3.97:1 as text on the tinted surfaces and 4.50:1 under white button text,
-     so every accent-coloured string on the site failed 1.4.3. These hold >=5:1
-     on all four light grounds; the hue and saturation are unchanged and the
-     7.8pt lightness step between base and hover is preserved. The dark theme
-     accent already passed and is untouched. Verified by e2e/axe.spec.ts. */
-  --accent: #9d5325;
-  --accent-hover: #7d421d;
+  --surface-sunken: #e4e7ee;
+
+  --ink: #12151c;
+  --ink-muted: #545d6e;
+
+  --border: #ccd2dd;
+  /* Interactive boundaries need 3:1 against the surface for WCAG 1.4.11; the
+     hairline --border does not carry that. Measured, not eyeballed: this value
+     is 3.09:1 on --bg and 3.52:1 on --surface. axe has no automated non-text
+     contrast rule, so nothing in the suite will catch a regression here —
+     recompute if you touch it. */
+  --border-strong: #80899a;
+
+  /* The "before" world. --before-line is for dashed rules and frames only; it
+     does not meet 4.5:1 and must never be used for text. --before-ink is the
+     text weight, and it is deliberately duller than --ink-muted. */
+  --before-line: #a3aab6;
+  --before-ink: #5b6373;
+
+  /* The "after". The only saturated colour in the system. */
+  --accent: #1f47e6;
+  --accent-hover: #1637bc;
   --accent-ink: #ffffff;
-  --success: #3f7a4b;
+
+  --success: #0f6b52;
   --danger: #b23b2e;
 
-  --shadow-sm: 0 1px 2px rgb(28 26 23 / 0.06);
-  --shadow-md: 0 8px 24px rgb(28 26 23 / 0.1);
+  --shadow-sm: 0 1px 2px rgb(18 21 28 / 0.07);
+  --shadow-md: 0 10px 28px rgb(18 21 28 / 0.1);
+
+  color-scheme: light;
+
+  /* The dark palette. Declared here so the values have one home; applied by the
+     two selectors below. Nothing should read a --d-* token directly. */
+  --d-bg: #0d1014;
+  --d-surface: #151a23;
+  --d-surface-sunken: #090c10;
+  --d-ink: #e9ecf3;
+  --d-ink-muted: #9aa3b5;
+  --d-border: #262d3a;
+  --d-border-strong: #5e6777; /* 3.34:1 on --d-bg, 3.06:1 on --d-surface */
+  --d-before-line: #454e5f;
+  --d-before-ink: #8189a0;
+  --d-accent: #7b93ff;
+  --d-accent-hover: #9aadff;
+  --d-accent-ink: #0d1014;
+  --d-success: #4ec49b;
+  --d-danger: #e2685c;
+  --d-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --d-shadow-md: 0 10px 28px rgb(0 0 0 / 0.55);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #131210;
-    --surface: #1b1917;
-    --surface-sunken: #100f0d;
-    --ink: #f3f1ec;
-    --ink-muted: #b6b0a4;
-    --border: #2e2b27;
-    --border-strong: #5c554b;
-    --accent: #d97a3d;
-    --accent-hover: #e89055;
-    --accent-ink: #1b1917;
-    --success: #5fa36c;
-    --danger: #d9584a;
+/* ---------------------------------------------------------------------------
+   Dark theme.
 
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-    --shadow-md: 0 8px 24px rgb(0 0 0 / 0.5);
+   Three states, not two. A visitor who has chosen nothing gets the OS
+   preference; a visitor who has chosen gets their choice, in both directions.
+   So the values are declared once above as --d-* and applied from two
+   selectors: the media query (skipped when light was explicitly chosen) and
+   the explicit dark stamp. Add a token to one and you must add it to the other.
+
+   `color-scheme` is what makes native widgets — scrollbars, form controls, the
+   canvas behind the page — follow along.
+--------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: var(--d-bg);
+    --surface: var(--d-surface);
+    --surface-sunken: var(--d-surface-sunken);
+    --ink: var(--d-ink);
+    --ink-muted: var(--d-ink-muted);
+    --border: var(--d-border);
+    --border-strong: var(--d-border-strong);
+    --before-line: var(--d-before-line);
+    --before-ink: var(--d-before-ink);
+    --accent: var(--d-accent);
+    --accent-hover: var(--d-accent-hover);
+    --accent-ink: var(--d-accent-ink);
+    --success: var(--d-success);
+    --danger: var(--d-danger);
+    --shadow-sm: var(--d-shadow-sm);
+    --shadow-md: var(--d-shadow-md);
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: var(--d-bg);
+  --surface: var(--d-surface);
+  --surface-sunken: var(--d-surface-sunken);
+  --ink: var(--d-ink);
+  --ink-muted: var(--d-ink-muted);
+  --border: var(--d-border);
+  --border-strong: var(--d-border-strong);
+  --before-line: var(--d-before-line);
+  --before-ink: var(--d-before-ink);
+  --accent: var(--d-accent);
+  --accent-hover: var(--d-accent-hover);
+  --accent-ink: var(--d-accent-ink);
+  --success: var(--d-success);
+  --danger: var(--d-danger);
+  --shadow-sm: var(--d-shadow-sm);
+  --shadow-md: var(--d-shadow-md);
 }
 
 @theme inline {
@@ -66,35 +134,44 @@
   --color-ink-muted: var(--ink-muted);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-before-line: var(--before-line);
+  --color-before-ink: var(--before-ink);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-success: var(--success);
   --color-danger: var(--danger);
 
-  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
 
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
 
-  /* Type scale — 1.25 ratio, capped so the hero never overwhelms a laptop. */
-  --text-label: 0.75rem;
-  --text-label--line-height: 1.4;
-  --text-label--letter-spacing: 0.06em;
+  /* Type scale. Bricolage runs tight at display sizes and needs negative
+     tracking to hold together; body sizes keep normal tracking. */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.35;
+  --text-label--letter-spacing: 0.12em;
   --text-body-sm: 0.875rem;
-  --text-body-sm--line-height: 1.5;
+  --text-body-sm--line-height: 1.55;
   --text-body: 1rem;
   --text-body--line-height: 1.65;
-  --text-body-lg: 1.1875rem;
+  --text-body-lg: 1.125rem;
   --text-body-lg--line-height: 1.6;
+  --text-display-sm: 1.375rem;
+  --text-display-sm--line-height: 1.2;
+  --text-display-sm--letter-spacing: -0.02em;
   --text-display-md: 1.875rem;
-  --text-display-md--line-height: 1.2;
-  --text-display-lg: 2.75rem;
-  --text-display-lg--line-height: 1.1;
-  --text-display-xl: 4rem;
-  --text-display-xl--line-height: 1.05;
+  --text-display-md--line-height: 1.12;
+  --text-display-md--letter-spacing: -0.03em;
+  --text-display-lg: 2.5rem;
+  --text-display-lg--line-height: 1.05;
+  --text-display-lg--letter-spacing: -0.035em;
+  --text-display-xl: 3.5rem;
+  --text-display-xl--line-height: 1.0;
+  --text-display-xl--letter-spacing: -0.04em;
 }
 
 @layer base {
@@ -124,8 +201,8 @@
   h2,
   h3 {
     font-family: var(--font-display);
+    font-weight: 800;
     text-wrap: balance;
-    font-weight: 500;
   }
 
   /* Every interactive element gets a visible focus state. Never remove this
@@ -140,25 +217,51 @@
     background: var(--accent);
     color: var(--accent-ink);
   }
+
+  /* Text selection is switched off site-wide by request. Worth knowing what it
+     does and does not do: it stops casual highlighting and drag-copying, and it
+     stops nothing else — view-source, reader mode and devtools all still hand
+     over the text. It is a deterrent, not protection.
+
+     The exceptions below are not optional. Form fields must stay editable or
+     the contact form becomes unusable, and the email address exists to be
+     copied — blocking that would cost enquiries, which is the one thing this
+     site is for. Anything else that should stay selectable can opt in with
+     data-selectable. */
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  select,
+  a[href^="mailto:"],
+  [data-selectable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
 
 @layer utilities {
-  /* Uppercase mono eyebrow/label, used for section eyebrows, stat labels and
-     tech chips. The squareness is the "technical" signal — no rounding. */
+  /* Uppercase mono label for eyebrows, side keys and metadata. */
   .label {
     font-family: var(--font-mono);
     font-size: var(--text-label);
-    line-height: 1.4;
-    letter-spacing: 0.06em;
+    line-height: 1.35;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
-  /* Running text stays near a 65-character measure. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
   .measure {
-    max-width: 65ch;
+    max-width: 62ch;
   }
 
   .measure-tight {
-    max-width: 52ch;
+    max-width: 48ch;
   }
 }

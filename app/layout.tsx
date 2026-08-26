@@ -1,16 +1,30 @@
 import type { Metadata } from "next";
-import { Fraunces } from "next/font/google";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import { Bricolage_Grotesque, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { site } from "@/lib/site";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import "./globals.css";
 
-const fraunces = Fraunces({
+/* Bricolage carries every statement on the site; Plex Sans carries the reading;
+   Plex Mono carries the labels that key the before/after sides. */
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-fraunces",
-  axes: ["SOFT", "WONK", "opsz"],
+  variable: "--font-bricolage",
+  weight: ["600", "800"],
+});
+
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-plex-sans",
+  weight: ["400", "500", "600"],
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-plex-mono",
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -87,9 +101,24 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${GeistSans.variable} ${GeistMono.variable}`}
+      className={`${bricolage.variable} ${plexSans.variable} ${plexMono.variable}`}
+      /* The script below stamps data-theme on this element before React runs,
+         so the server HTML and the hydrated tree disagree about it by design. */
+      suppressHydrationWarning
     >
       <body>
+        {/*
+          Applies a stored theme choice before the first paint. Inline and
+          synchronous on purpose: anything deferred repaints, and the visitor
+          sees a flash of the other theme. Absent a stored choice nothing is
+          stamped and the OS preference wins, which is what the CSS expects.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{var t=localStorage.getItem("aaknav-theme");if(t==="dark"||t==="light"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}',
+          }}
+        />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-[60] focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink"
