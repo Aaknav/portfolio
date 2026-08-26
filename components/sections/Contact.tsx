@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/motion/Reveal";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { mailto, site } from "@/lib/site";
 
@@ -7,21 +8,21 @@ export function Contact() {
     <section
       id="contact"
       aria-labelledby="contact-heading"
-      className="border-t border-border px-6 py-24 md:py-32"
+      className="border-t border-border px-6 py-14 md:py-32"
     >
-      <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+      <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
         <Reveal>
           <div>
-            <p className="label text-accent">Contact</p>
-            <h2 id="contact-heading" className="mt-4 text-display-md md:text-display-lg">
-              Have a project in mind?
-            </h2>
-            <p className="measure-tight mt-4 text-body-lg text-ink-muted">
-              Tell me what you&rsquo;re trying to build — I&rsquo;ll tell you
-              honestly whether I&rsquo;m the right fit.
-            </p>
+            {/* Was hand-rolled markup identical to SectionHeading, which meant
+                it silently missed the mobile centring every other intro got. */}
+            <SectionHeading
+              id="contact-heading"
+              eyebrow="Contact"
+              title="Have a project in mind?"
+              lede="Tell me what you’re trying to build — I’ll tell you honestly whether I’m the right fit."
+            />
 
-            <div className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
+            <div className="mt-10 flex flex-col gap-4 border-t border-border pt-8 text-center md:text-left">
               <p className="label text-ink-muted">Or reach me directly</p>
               <a
                 href={mailto()}

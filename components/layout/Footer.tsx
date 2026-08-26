@@ -1,50 +1,30 @@
-import Link from "next/link";
-import { mailto, navLinks, site } from "@/lib/site";
+import { site } from "@/lib/site";
 
+/**
+ * The sign-off, and nothing else.
+ *
+ * The footer used to repeat the whole site: the same four nav links as the
+ * header, and the same email and GitHub links as the Contact section directly
+ * above it. Neither repetition earned its place — the header nav is sticky, so
+ * it is on screen at the moment anyone would reach for a footer link, and a
+ * visitor who has scrolled past the contact form has already been offered both
+ * addresses at the point where they were deciding.
+ *
+ * The heart is decorative: it is hidden from assistive tech and the word it
+ * stands for is read out instead, so the line is spoken as written rather than
+ * as "black heart suit".
+ */
 export function Footer() {
   return (
-    <footer className="border-t border-border px-6 py-12">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 md:flex-row md:items-start md:justify-between">
-        <div>
-          <p className="font-display text-body-lg">
-            {site.brand}
-          </p>
-          <p className="mt-2 text-body-sm text-ink-muted">
-            {site.role} · {site.location}
-          </p>
-        </div>
-
-        <nav aria-label="Footer" className="flex flex-wrap gap-x-8 gap-y-3">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-body-sm text-ink-muted transition-colors hover:text-ink"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex flex-col gap-3">
-          <a
-            href={mailto()}
-            className="text-body-sm text-ink-muted transition-colors hover:text-ink"
-          >
-            {site.email}
-          </a>
-          <a
-            href={site.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-body-sm text-ink-muted transition-colors hover:text-ink"
-          >
-            GitHub <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      </div>
-
-      <div className="mx-auto mt-10 max-w-6xl border-t border-border pt-6">
+    <footer className="border-t border-border px-6 py-10">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center">
+        <p className="text-body-sm text-ink-muted">
+          Made with{" "}
+          <span aria-hidden="true" className="text-accent">
+            &#9829;
+          </span>
+          <span className="sr-only">love</span> by {site.brand}
+        </p>
         <p className="text-body-sm text-ink-muted">
           © {new Date().getFullYear()} {site.name}
         </p>
