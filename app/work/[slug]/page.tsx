@@ -228,11 +228,7 @@ export default async function ProjectPage({
                 honestly whether I&rsquo;m the right fit.
               </p>
               <div className="mt-3">
-                <ButtonLink
-                  href="/#contact"
-                  size="lg"
-                  className="bg-accent-ink text-accent hover:bg-accent-ink hover:opacity-90"
-                >
+                <ButtonLink href="/#contact" size="lg" variant="inverse">
                   Start a project <span aria-hidden="true">→</span>
                 </ButtonLink>
               </div>

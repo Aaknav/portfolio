@@ -1,17 +1,28 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 
-type Variant = "primary" | "secondary";
+type Variant = "primary" | "secondary" | "inverse";
 type Size = "md" | "lg";
 
 const base =
   "inline-flex items-center justify-center gap-2 rounded-md font-medium " +
-  "transition-colors duration-150 disabled:opacity-60 disabled:pointer-events-none";
+  "transition-[color,background-color,border-color,opacity] duration-150 " +
+  "disabled:opacity-60 disabled:pointer-events-none";
 
 const variants: Record<Variant, string> = {
   primary: "bg-accent text-accent-ink hover:bg-accent-hover",
   secondary:
     "border border-border-strong text-ink hover:border-accent hover:text-accent bg-transparent",
+  /* For use on an accent ground. This has to be a variant rather than a
+     className override: passing colour utilities alongside `primary` leaves two
+     competing `text-*` rules, and Tailwind settles that by stylesheet order,
+     not by the order they appear in the attribute — which rendered the label in
+     the button's own background colour and made it invisible. */
+  /* The global :focus-visible ring is drawn in --accent, which on an accent
+     ground is the panel's own colour — a 1:1 ring nobody can see. This variant
+     is the one place that happens, so it carries its own. */
+  inverse:
+    "bg-accent-ink text-accent hover:opacity-90 focus-visible:outline-accent-ink",
 };
 
 const sizes: Record<Size, string> = {
