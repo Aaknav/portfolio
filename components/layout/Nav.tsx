@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { navLinks, site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -99,10 +100,12 @@ export function Nav() {
               <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent transition-[width] duration-150 group-hover:w-full" />
             </Link>
           ))}
+          <ThemeToggle />
           <ButtonLink href="#contact">Start a project</ButtonLink>
         </nav>
 
         <div className="flex items-center gap-3 md:hidden">
+          <ThemeToggle />
           <ButtonLink href="#contact">Start a project</ButtonLink>
           <button
             ref={triggerRef}
