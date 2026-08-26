@@ -46,7 +46,7 @@ export function Nav() {
       if (event.key !== "Tab") return;
 
       const focusable = sheetRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled])',
+        "a[href], button:not([disabled])",
       );
       if (!focusable || focusable.length === 0) return;
 
@@ -73,59 +73,68 @@ export function Nav() {
   }, [open]);
 
   return (
-    <header
-      className={[
-        "fixed inset-x-0 top-0 z-50 transition-colors duration-200",
-        scrolled
-          ? "border-b border-border bg-surface/90 backdrop-blur-sm"
-          : "border-b border-transparent bg-transparent",
-      ].join(" ")}
-    >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link
-          href="/"
-          className="font-display text-[1.375rem] font-medium tracking-tight"
-        >
-          {site.brand}
-        </Link>
+    <>
+      <header
+        className={[
+          "fixed inset-x-0 top-0 z-50 transition-colors duration-200",
+          scrolled
+            ? "border-b border-border bg-surface/90 backdrop-blur-sm"
+            : "border-b border-transparent bg-transparent",
+        ].join(" ")}
+      >
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Link
+            href="/"
+            className="font-display text-[1.375rem] font-medium tracking-tight"
+          >
+            {site.brand}
+          </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="group relative text-body-sm text-ink-muted transition-colors hover:text-ink"
-            >
-              {link.label}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent transition-[width] duration-150 group-hover:w-full" />
-            </Link>
-          ))}
-          <ThemeToggle />
-          <ButtonLink href="#contact">Start a project</ButtonLink>
-        </nav>
+          <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group relative text-body-sm text-ink-muted transition-colors hover:text-ink"
+              >
+                {link.label}
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent transition-[width] duration-150 group-hover:w-full" />
+              </Link>
+            ))}
+            <ThemeToggle />
+            <ButtonLink href="#contact">Start a project</ButtonLink>
+          </nav>
 
-        {/* No CTA here: the hero's "Start a project" sits directly below the
+          {/* No CTA here: the hero's "Start a project" sits directly below the
             sticky bar on a phone, so the two read as the same button twice. It
             lives in the sheet instead, where it is still one tap away. */}
-        <div className="flex items-center gap-3 md:hidden">
-          <ThemeToggle />
-          <button
-            ref={triggerRef}
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-expanded={open}
-            aria-controls="mobile-nav"
-            aria-label="Open menu"
-            className="flex size-10 items-center justify-center rounded-md border border-border-strong"
-          >
-            <span aria-hidden="true" className="flex flex-col gap-1.5">
-              <span className="block h-px w-5 bg-ink" />
-              <span className="block h-px w-5 bg-ink" />
-            </span>
-          </button>
+          <div className="flex items-center gap-3 md:hidden">
+            <ThemeToggle />
+            <button
+              ref={triggerRef}
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              aria-label="Open menu"
+              className="flex size-10 items-center justify-center rounded-md border border-border-strong"
+            >
+              <span aria-hidden="true" className="flex flex-col gap-1.5">
+                <span className="block h-px w-5 bg-ink" />
+                <span className="block h-px w-5 bg-ink" />
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
+      {/* Outside <header> on purpose. Once scrolled the header applies
+          backdrop-blur, and a backdrop-filter makes an element the containing
+          block for its fixed descendants — so a sheet nested inside it resolved
+          `inset-0` against the 64px header strip instead of the viewport, and
+          the panel painted only that strip while its links spilled out below
+          with nothing behind them. Only reproducible when opening the menu
+          after scrolling, which is why e2e/nav.spec.ts now scrolls first. */}
       {open ? (
         <div className="fixed inset-0 z-50 md:hidden">
           <button
@@ -178,6 +187,6 @@ export function Nav() {
           </div>
         </div>
       ) : null}
-    </header>
+    </>
   );
 }

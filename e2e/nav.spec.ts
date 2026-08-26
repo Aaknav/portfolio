@@ -52,6 +52,41 @@ test.describe("mobile menu", () => {
     await expect(trigger).toBeFocused();
   });
 
+  /*
+   * Regression: the sheet used to live inside <header>, which applies
+   * backdrop-blur once the page is scrolled. A backdrop-filter makes an element
+   * the containing block for its fixed descendants, so `inset-0` resolved
+   * against the 64px header strip rather than the viewport — the panel painted
+   * only that strip and its links spilled out below it over the page. Opening
+   * the menu at the top of the page never reproduced it, so the scroll is the
+   * whole point of this test.
+   */
+  test("fills the viewport when opened after scrolling", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, "mobile layout only");
+    await page.goto("/");
+
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 2));
+    await page.waitForFunction(() => window.scrollY > 0);
+
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const sheet = page.getByRole("dialog", { name: "Menu" });
+    await expect(sheet).toBeVisible();
+
+    const viewport = page.viewportSize();
+    const box = await sheet.boundingBox();
+    expect(box, "sheet should have a box").not.toBeNull();
+    expect(box!.height).toBeGreaterThanOrEqual((viewport?.height ?? 0) - 1);
+
+    // And the panel is actually painted, not a transparent frame.
+    const background = await sheet.evaluate(
+      (el) => getComputedStyle(el).backgroundColor,
+    );
+    expect(background).not.toBe("rgba(0, 0, 0, 0)");
+  });
+
   test("closes when a link is chosen", async ({ page, isMobile }) => {
     test.skip(!isMobile, "mobile layout only");
     await page.goto("/");
