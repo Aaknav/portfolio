@@ -26,8 +26,6 @@ export type ProjectImage = {
 export type Outcome = {
   title: string;
   body: string;
-  /** Picks the miniature interface visual drawn on the card. */
-  visual: "queue" | "access" | "speed";
 };
 
 export type CaseStudySection = {
@@ -51,6 +49,24 @@ export type Project = {
   outcomes?: Outcome[];
   /** Homepage: compact credibility strip. Verified claims only. */
   proofPoints?: string[];
+
+  /**
+   * The disorder this replaced, and what it became.
+   *
+   * These are illustrative of the problem each case study already documents —
+   * a shared inbox, a spreadsheet, a DM thread — not transcriptions of real
+   * client messages, and never a metric. The rule at the top of this file still
+   * holds: nothing here is a claim about an outcome that was not delivered.
+   */
+  before?: string[];
+  after?: { item: string; state: string }[];
+
+  /**
+   * For an owner-run site: the things that used to require a developer and now
+   * do not. Every entry must be covered by the project's own summary — this is
+   * a claim about who holds the keys, and it is checkable by asking the client.
+   */
+  handover?: string[];
   /** Homepage: four or five technologies, not a full inventory. */
   primaryStack: string[];
 
@@ -88,17 +104,14 @@ export const projects: Project[] = [
       {
         title: "One shared queue",
         body: "Ownership, priorities and ticket status in one place.",
-        visual: "queue",
       },
       {
         title: "Secure client access",
         body: "Each client sees only the work they are authorised to access.",
-        visual: "access",
       },
       {
         title: "Faster support",
         body: "Email intake and real-time updates keep conversations moving.",
-        visual: "speed",
       },
     ],
 
@@ -109,6 +122,17 @@ export const projects: Project[] = [
       "Email-to-ticket",
       "Real-time updates",
       "246 automated tests",
+    ],
+
+    before: [
+      "Fwd: Re: Re: printer down again??",
+      "missed call — 11:40 pm",
+      "tracker_final_v3_USE THIS.xlsx",
+    ],
+    after: [
+      { item: "Printer offline — Floor 2", state: "Owned" },
+      { item: "New user access request", state: "Open" },
+      { item: "Invoice export failing", state: "Resolved" },
     ],
 
     primaryStack: ["Next.js", "TypeScript", "Python", "Frappe", "MariaDB"],
@@ -201,6 +225,9 @@ export const projects: Project[] = [
       "A fast marketing site with a private admin panel behind it, so designs, testimonials and copy change without a developer.",
 
     primaryStack: ["Next.js", "TypeScript", "Supabase", "PostgreSQL"],
+
+
+    handover: ["Gallery of designs", "Testimonials", "Page copy"],
 
     featured: false,
     links: {
