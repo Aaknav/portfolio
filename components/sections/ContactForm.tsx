@@ -6,6 +6,18 @@ import { Button } from "@/components/ui/Button";
 
 const initialState: ContactState = { status: "idle" };
 
+/* The summary names fields the way their labels do, not the way the schema
+   does. Keep in step with the labels below. */
+const FIELD_LABELS: Record<string, string> = {
+  name: "Name",
+  email: "Email",
+  company: "Company",
+  projectType: "What do you need?",
+  budget: "Budget",
+  timeline: "Timeline",
+  message: "What are you trying to build?",
+};
+
 const fieldClass =
   "w-full rounded-md border border-border-strong bg-surface px-3 py-2.5 text-body " +
   "text-ink transition-colors placeholder:text-ink-muted/70 focus:border-accent";
@@ -26,9 +38,22 @@ const budgets = [
   "₹4,00,000+",
 ];
 
-const timelines = ["As soon as possible", "1–3 months", "3–6 months", "Just exploring"];
+const timelines = [
+  "As soon as possible",
+  "1–3 months",
+  "3–6 months",
+  "Just exploring",
+];
 
-function Label({ htmlFor, children, optional }: { htmlFor: string; children: string; optional?: boolean }) {
+function Label({
+  htmlFor,
+  children,
+  optional,
+}: {
+  htmlFor: string;
+  children: string;
+  optional?: boolean;
+}) {
   return (
     <label htmlFor={htmlFor} className="mb-2 block text-body-sm text-ink">
       {children}
@@ -68,10 +93,45 @@ export function ContactForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-5" noValidate>
+      {/*
+        The summary belongs at the top of the form, not above the submit button
+        where it used to sit: it told people to "check the fields below" while
+        every field was above it. Naming the fields — and linking to them — beats
+        making someone scan a nine-field form for red text.
+      */}
+      {state.status === "error" && state.message ? (
+        <div
+          role="alert"
+          className="flex flex-col gap-2 border-l-2 border-danger bg-surface p-4"
+        >
+          <p className="text-body-sm text-danger">{state.message}</p>
+          {state.errors ? (
+            <ul className="flex flex-wrap gap-x-4 gap-y-1">
+              {Object.keys(state.errors).map((field) => (
+                <li key={field}>
+                  <a
+                    href={`#${field}`}
+                    className="text-body-sm text-danger underline underline-offset-4"
+                  >
+                    {FIELD_LABELS[field] ?? field}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+
       {/* Honeypot — visually and programmatically hidden from people. */}
       <div className="hidden" aria-hidden="true">
         <label htmlFor="website">Website</label>
-        <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -137,7 +197,10 @@ export function ContactForm() {
               </option>
             ))}
           </select>
-          <FieldError id="projectType-error" message={state.errors?.projectType} />
+          <FieldError
+            id="projectType-error"
+            message={state.errors?.projectType}
+          />
         </div>
       </div>
 
@@ -193,12 +256,6 @@ export function ContactForm() {
         />
         <FieldError id="message-error" message={state.errors?.message} />
       </div>
-
-      {state.status === "error" && state.message ? (
-        <p role="alert" className="text-body-sm text-danger">
-          {state.message}
-        </p>
-      ) : null}
 
       <div>
         <Button type="submit" size="lg" disabled={pending}>
