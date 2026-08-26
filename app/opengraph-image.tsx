@@ -19,9 +19,12 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#FAF9F6",
+          /* These are the light-theme tokens from app/globals.css. Satori
+             cannot read CSS custom properties, so they are literals here and
+             will drift if the palette moves — change both together. */
+          background: "#eef0f4",
           padding: "72px",
-          fontFamily: "serif",
+          fontFamily: "sans-serif",
         }}
       >
         <div
@@ -30,7 +33,7 @@ export default function OpengraphImage() {
             fontSize: 26,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
-            color: "#B5602A",
+            color: "#545d6e",
           }}
         >
           {site.brand}
@@ -40,16 +43,17 @@ export default function OpengraphImage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            fontSize: 68,
-            lineHeight: 1.1,
-            color: "#1C1A17",
+            fontSize: 66,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            color: "#12151c",
           }}
         >
-          <span>Websites that win customers.</span>
-          <span>Software that runs your business.</span>
+          <span>Before, it lived in a shared inbox.</span>
+          <span style={{ color: "#1f47e6" }}>After, it had an owner.</span>
         </div>
 
-        <div style={{ display: "flex", fontSize: 26, color: "#5B564D" }}>
+        <div style={{ display: "flex", fontSize: 26, color: "#545d6e" }}>
           {site.name} · {site.role} · {site.location}
         </div>
       </div>
