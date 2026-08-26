@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { site } from "@/lib/site";
 import { MotionProvider } from "@/components/motion/MotionProvider";
+import { BackToTop } from "@/components/ui/BackToTop";
 import "./globals.css";
 
 /* Bricolage carries every statement on the site; Plex Sans carries the reading;
@@ -126,6 +127,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <MotionProvider>{children}</MotionProvider>
+        <BackToTop />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
