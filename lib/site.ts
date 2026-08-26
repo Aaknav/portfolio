@@ -23,6 +23,20 @@ export const site = {
    */
   availability: null as string | null,
 
+  /**
+   * Portrait for the About section. Set to null and the section drops the
+   * figure cleanly rather than rendering a hole.
+   *
+   * `src` is a file in /public. The crop is deliberate: the frame is 4:5 and
+   * the focal point sits at 35% from the top, which keeps a face centred with
+   * the background still readable above it.
+   */
+  portrait: {
+    src: "/abhinav-giza.jpg",
+    alt: "Abhinav Bankar standing in front of the Great Pyramid of Giza",
+    caption: "Giza, Egypt",
+  } as { src: string; alt: string; caption: string } | null,
+
   title: "Aaknav — Full-Stack Developer for Business Websites & Software",
   description:
     "I build business websites and custom software — ticketing systems, dashboards, and internal tools — for small and medium businesses. Based in Pune.",
