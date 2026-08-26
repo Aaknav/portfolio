@@ -89,7 +89,7 @@ export function About() {
           ) : null}
 
           <Reveal delay={0.15}>
-            <div className="flex flex-col gap-6 text-body-lg text-ink-muted">
+            <div className="flex flex-col gap-6 text-body-lg text-ink">
               <p>
                 I spent two and a half years as a Software Analyst on
                 Capgemini&rsquo;s Cloud Operations team, working hands-on with

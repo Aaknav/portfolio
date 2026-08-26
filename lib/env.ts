@@ -30,6 +30,13 @@ export const env = createEnv({
 
     /* Must be a verified sender in Resend. Defaults to enquiries@resend.dev. */
     CONTACT_FROM_EMAIL: z.email().optional(),
+
+    /* Injected by the platform, not configured by us: "1" on any Vercel build,
+       absent everywhere else. Analytics reads it because its script is served
+       from /_vercel/insights and only exists on a deployment — rendering the
+       component locally 404s and fills the console, which the smoke suite
+       (rightly) fails on. */
+    VERCEL: z.string().optional(),
   },
 
   client: {},
@@ -38,6 +45,7 @@ export const env = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     CONTACT_TO_EMAIL: process.env.CONTACT_TO_EMAIL,
     CONTACT_FROM_EMAIL: process.env.CONTACT_FROM_EMAIL,
+    VERCEL: process.env.VERCEL,
   },
 
   emptyStringAsUndefined: true,

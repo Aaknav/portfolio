@@ -12,7 +12,7 @@ export const site = {
   location: "Pune, India",
 
   /** Set once the domain is live — used for canonical URLs, OG tags, sitemap. */
-  url: "https://aaknav.dev",
+  url: "https://aaknav.vercel.app",
 
   email: "abhizbankar@gmail.com",
   github: "https://github.com/Aaknav",

@@ -150,7 +150,7 @@ export default async function ProjectPage({
               </div>
               <div className="flex flex-col gap-3 bg-surface p-6 md:p-8">
                 <h2 className="label text-accent">What replaced it</h2>
-                <p className="text-body text-ink-muted">{caseStudy.solution}</p>
+                <p className="text-body text-ink">{caseStudy.solution}</p>
               </div>
             </div>
           </div>
@@ -170,7 +170,7 @@ export default async function ProjectPage({
                   </h3>
 
                   <div className="flex flex-col gap-5">
-                    <p className="measure text-body text-ink-muted">
+                    <p className="measure text-body text-ink">
                       {section.body}
                     </p>
 
@@ -216,14 +216,23 @@ export default async function ProjectPage({
           </div>
 
           <div className="mx-auto mt-20 max-w-5xl">
-            <section className="flex flex-col gap-4 border-l-2 border-accent bg-surface p-8 md:p-10">
+            {/* The site rations its one saturated colour, which keeps it
+                meaningful and leaves the page close to monochrome. This is the
+                single place it gets a whole panel: the end of the longest read,
+                where a colour change is a welcome full stop and there is no
+                form whose legibility it could cost. */}
+            <section className="flex flex-col gap-4 bg-accent p-8 text-accent-ink md:p-10">
               <p className="text-display-md">Need something like this built?</p>
-              <p className="measure text-body text-ink-muted">
+              <p className="measure text-body opacity-90">
                 Tell me what you&rsquo;re trying to build — I&rsquo;ll tell you
                 honestly whether I&rsquo;m the right fit.
               </p>
               <div className="mt-3">
-                <ButtonLink href="/#contact" size="lg">
+                <ButtonLink
+                  href="/#contact"
+                  size="lg"
+                  className="bg-accent-ink text-accent hover:bg-accent-ink hover:opacity-90"
+                >
                   Start a project <span aria-hidden="true">→</span>
                 </ButtonLink>
               </div>

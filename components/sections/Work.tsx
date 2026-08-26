@@ -44,7 +44,7 @@ export function Work() {
                   <h3 className="max-w-[22ch] text-display-md md:text-display-lg">
                     {project.headline}
                   </h3>
-                  <p className="measure text-body text-ink-muted">
+                  <p className="measure text-body text-ink">
                     {project.summary}
                   </p>
                 </div>

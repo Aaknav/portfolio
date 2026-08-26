@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { site } from "@/lib/site";
+import { env } from "@/lib/env";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { BackToTop } from "@/components/ui/BackToTop";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 /* Bricolage carries every statement on the site; Plex Sans carries the reading;
@@ -128,6 +130,11 @@ export default function RootLayout({
         </a>
         <MotionProvider>{children}</MotionProvider>
         <BackToTop />
+        {/* Answers the only question that matters about this page: do people
+            open the case studies, or stop at the hero. Rendered only on a
+            deployment — its script lives at /_vercel/insights and 404s
+            anywhere else, which fills the console and fails the smoke suite. */}
+        {env.VERCEL ? <Analytics /> : null}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
