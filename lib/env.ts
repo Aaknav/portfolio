@@ -32,6 +32,11 @@ export const env = createEnv({
        component locally 404s and fills the console, which the smoke suite
        (rightly) fails on. */
     VERCEL: z.string().optional(),
+
+    /* "production" | "preview" | "development" on a Vercel build, absent
+       locally. data/testimonials.ts uses it to keep placeholder quotes off the
+       production site while leaving them visible in previews. */
+    VERCEL_ENV: z.string().optional(),
   },
 
   client: {},
@@ -39,6 +44,7 @@ export const env = createEnv({
   runtimeEnv: {
     WEB3FORMS_ACCESS_KEY: process.env.WEB3FORMS_ACCESS_KEY,
     VERCEL: process.env.VERCEL,
+    VERCEL_ENV: process.env.VERCEL_ENV,
   },
 
   emptyStringAsUndefined: true,
