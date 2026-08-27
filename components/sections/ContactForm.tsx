@@ -7,7 +7,7 @@ import {
   type EnquiryErrors,
 } from "@/lib/contact";
 import { env } from "@/lib/env";
-import { site } from "@/lib/site";
+import { mailto, site } from "@/lib/site";
 import { Button } from "@/components/ui/Button";
 
 /* The summary names fields the way their labels do, not the way the schema
@@ -154,6 +154,46 @@ export function ContactForm() {
     form.reset();
     setStatus("sent");
   };
+
+  /*
+   * Replaces the form once an enquiry lands. role="status" so a screen reader
+   * is told without having focus moved out from under them, and the reply
+   * window is repeated here because it is the thing someone wants to know at
+   * the moment they have just handed over their problem.
+   */
+  if (status === "sent") {
+    return (
+      <div
+        role="status"
+        className="flex flex-col gap-3 rounded-xl border-l-2 border-accent bg-surface p-6 md:p-8"
+      >
+        <p className="text-display-sm text-ink">Thanks — that reached me.</p>
+        <p className="text-body text-ink-muted">
+          I&rsquo;ll get back to you within two days, even if the answer is no.
+          If it is urgent, email me directly at{" "}
+          <a
+            href={mailto()}
+            className="text-accent underline underline-offset-4"
+          >
+            {site.email}
+          </a>
+          .
+        </p>
+        <div className="mt-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => {
+              setStatus("idle");
+              setMessage(null);
+            }}
+          >
+            Send another
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
