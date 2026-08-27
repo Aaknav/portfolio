@@ -12,7 +12,7 @@ trading as **Aaknav**. Built with Next.js (App Router) + Tailwind CSS, deployed 
 | Styling | Tailwind CSS 4 — CSS-first config, tokens in `app/globals.css` |
 | Motion | Motion 13 (`motion/react`) |
 | Fonts | Bricolage Grotesque (display) · IBM Plex Sans / IBM Plex Mono — all self-hosted |
-| Email | Resend, via a Server Action |
+| Email | Web3Forms, posted from a Server Action |
 | Testing | Vitest + Testing Library · Playwright + axe-core |
 | Hosting | Vercel |
 
@@ -57,7 +57,7 @@ npm run test:e2e:report                # open the last HTML report
 ```
 
 Playwright builds and serves on port **3100**, so a `npm run dev` already running
-on 3000 is left alone — override with `PLAYWRIGHT_PORT`. `RESEND_API_KEY` is
+on 3000 is left alone — override with `PLAYWRIGHT_PORT`. `WEB3FORMS_ACCESS_KEY` is
 forced empty for the server under test, so no test can send a real enquiry.
 Coverage, browsers, accessibility scans and the deliberate absence of visual
 baselines are all documented in [`e2e/README.md`](e2e/README.md).
@@ -75,9 +75,7 @@ thing that needs configuration — everything else is static.
 
 | Variable | Purpose |
 | --- | --- |
-| `RESEND_API_KEY` | Resend API key. Without it the form returns a graceful error pointing at the direct email address. |
-| `CONTACT_TO_EMAIL` | Where enquiries are delivered. Defaults to the address in `lib/site.ts`. |
-| `CONTACT_FROM_EMAIL` | Verified Resend sender. Defaults to `enquiries@resend.dev` (fine for testing, replace for production). |
+| `WEB3FORMS_ACCESS_KEY` | Access key from [web3forms.com](https://web3forms.com). Without it the form returns a graceful error pointing at the direct email address. |
 
 Values are validated at startup by `lib/env.ts`, so a key from the wrong service
 or a typo'd address fails immediately instead of at send time in production.
@@ -107,7 +105,7 @@ data/
 lib/
   site.ts              identity, nav links, contact routes
   env.ts               validated environment
-  actions.ts           contact Server Action (zod validation → Resend)
+  actions.ts           contact Server Action (zod validation → Web3Forms)
 e2e/                   Playwright specs, helpers, and their own README
 ```
 
@@ -160,5 +158,5 @@ theme change is a token change.
       in `data/projects.ts`
 - [ ] Set `site.url` in `lib/site.ts` to the real domain
 - [ ] Set `site.availability` if — and only if — it is currently true
-- [ ] Configure Resend and send a real test enquiry
+- [ ] Set `WEB3FORMS_ACCESS_KEY` and send a real test enquiry
 - [ ] Consider a branded contact address in place of the personal one

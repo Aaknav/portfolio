@@ -6,8 +6,8 @@ import { waitForHydration } from "./helpers";
  * matter more than its happy path.
  *
  * Nothing here can send a real enquiry: playwright.config.ts starts the server
- * with RESEND_API_KEY empty, and every case below fails zod before the action
- * would reach Resend anyway.
+ * with WEB3FORMS_ACCESS_KEY empty, and every case below fails zod before the action
+ * would reach Web3Forms anyway.
  */
 
 test.beforeEach(async ({ page }) => {

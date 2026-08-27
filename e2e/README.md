@@ -23,9 +23,9 @@ running on 3000 is left alone. Override with `PLAYWRIGHT_PORT`.
 
 ## No test can send a real enquiry
 
-`playwright.config.ts` starts the server with `RESEND_API_KEY` empty. The
-contact action only reaches Resend after zod passes, and with no key it returns
-an error before touching the network. Every case in `contact.spec.ts` fails
+`playwright.config.ts` starts the server with `WEB3FORMS_ACCESS_KEY` empty. The
+contact action only reaches Web3Forms after zod passes, and with no key it
+returns an error before touching the network. Every case in `contact.spec.ts` fails
 validation first anyway.
 
 ## Browsers

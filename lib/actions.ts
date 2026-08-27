@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { Resend } from "resend";
 import { env } from "@/lib/env";
 import { site } from "@/lib/site";
 
@@ -60,7 +59,11 @@ export async function submitContact(
       const key = String(issue.path[0]);
       errors[key] ??= issue.message;
     }
-    return { status: "error", message: "Please check the fields below.", errors };
+    return {
+      status: "error",
+      message: "Please check the fields below.",
+      errors,
+    };
   }
 
   const data = parsed.data;
@@ -68,36 +71,61 @@ export async function submitContact(
   // Silently accept honeypot hits so bots get no signal.
   if (data.website) return { status: "success" };
 
-  const apiKey = env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.error("RESEND_API_KEY is not set — enquiry was not delivered.");
+  const accessKey = env.WEB3FORMS_ACCESS_KEY;
+  if (!accessKey) {
+    console.error(
+      "WEB3FORMS_ACCESS_KEY is not set — enquiry was not delivered.",
+    );
     return {
       status: "error",
       message: `Something went wrong sending that. Please email me directly at ${site.email}.`,
     };
   }
 
+  /*
+   * Posted from the server, not the browser.
+   *
+   * Web3Forms is designed to be called straight from a static page, and the key
+   * is safe to expose — but going through the Server Action keeps zod as the
+   * only gate an enquiry passes, keeps the honeypot server-side where a bot
+   * cannot read it, and means the browser never learns the endpoint. The trade
+   * is one extra hop, which nobody will feel.
+   *
+   * It is here rather than an email API because delivery goes to the address
+   * the key was issued to: no sender domain to own, no DNS to verify.
+   */
   try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: env.CONTACT_FROM_EMAIL ?? "enquiries@resend.dev",
-      to: env.CONTACT_TO_EMAIL ?? site.email,
-      replyTo: data.email,
-      subject: `New enquiry — ${data.projectType} — ${data.name}`,
-      text: [
-        `Name:      ${data.name}`,
-        `Email:     ${data.email}`,
-        `Company:   ${data.company ?? "—"}`,
-        `Type:      ${data.projectType}`,
-        `Budget:    ${data.budget ?? "—"}`,
-        `Timeline:  ${data.timeline ?? "—"}`,
-        "",
-        data.message,
-      ].join("\n"),
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        access_key: accessKey,
+        subject: `New enquiry — ${data.projectType} — ${data.name}`,
+        from_name: site.brand,
+        /* So a reply in the mail client goes to the enquirer, not to nobody. */
+        replyto: data.email,
+        Name: data.name,
+        Email: data.email,
+        Company: data.company ?? "—",
+        "Project type": data.projectType,
+        Budget: data.budget ?? "—",
+        Timeline: data.timeline ?? "—",
+        Message: data.message,
+      }),
     });
 
-    if (error) {
-      console.error("Resend rejected the enquiry:", error);
+    const result: unknown = await response.json().catch(() => null);
+    const delivered =
+      response.ok &&
+      typeof result === "object" &&
+      result !== null &&
+      (result as { success?: unknown }).success === true;
+
+    if (!delivered) {
+      console.error("Web3Forms rejected the enquiry:", response.status, result);
       return {
         status: "error",
         message: `Something went wrong sending that. Please email me directly at ${site.email}.`,

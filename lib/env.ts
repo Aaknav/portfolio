@@ -11,25 +11,20 @@ import { z } from "zod";
  * perfectly good string and only fails in production at send time.
  *
  * `emptyStringAsUndefined` matters more than it looks. `.env.example` ships
- * `RESEND_API_KEY=` and playwright.config.ts sets it to "", both of which mean
- * "not configured" — without this they would arrive as an empty string and slip
- * past a naive presence check.
+ * `WEB3FORMS_ACCESS_KEY=` and playwright.config.ts sets it to "", both of which
+ * mean "not configured" — without this they would arrive as an empty string and
+ * slip past a naive presence check.
  */
 export const env = createEnv({
   server: {
-    /* Resend issues keys prefixed `re_`; anything else is a paste error or a
-       key from a different service, and is worth catching at boot. */
-    RESEND_API_KEY: z
+    /* Web3Forms delivers enquiries to the address the key was issued to, so
+       there is no from/to address to configure and no domain to verify — which
+       is the whole reason it is here rather than an email API. The key is a
+       UUID; anything else is a paste error worth catching at boot. */
+    WEB3FORMS_ACCESS_KEY: z
       .string()
-      .startsWith("re_", "RESEND_API_KEY should start with 're_'")
+      .uuid("WEB3FORMS_ACCESS_KEY should be the UUID from web3forms.com")
       .optional(),
-
-    /* A typo here silently routes enquiries into the void — the send succeeds
-       and nobody ever receives it. Defaults to site.email when unset. */
-    CONTACT_TO_EMAIL: z.email().optional(),
-
-    /* Must be a verified sender in Resend. Defaults to enquiries@resend.dev. */
-    CONTACT_FROM_EMAIL: z.email().optional(),
 
     /* Injected by the platform, not configured by us: "1" on any Vercel build,
        absent everywhere else. Analytics reads it because its script is served
@@ -42,9 +37,7 @@ export const env = createEnv({
   client: {},
 
   runtimeEnv: {
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
-    CONTACT_TO_EMAIL: process.env.CONTACT_TO_EMAIL,
-    CONTACT_FROM_EMAIL: process.env.CONTACT_FROM_EMAIL,
+    WEB3FORMS_ACCESS_KEY: process.env.WEB3FORMS_ACCESS_KEY,
     VERCEL: process.env.VERCEL,
   },
 

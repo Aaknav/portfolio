@@ -6,8 +6,8 @@ import { site } from "@/lib/site";
  * third-party service, so every branch through it is worth pinning: what gets
  * rejected, what gets swallowed silently, and what actually sends.
  *
- * Resend is mocked at the module boundary — these tests must never be one
- * misconfigured env var away from emailing a real inbox.
+ * fetch is stubbed — these tests must never be one misconfigured env var away
+ * from posting a real enquiry to Web3Forms.
  */
 /*
  * `env` is validated once at module import, so vi.stubEnv after the fact never
@@ -15,19 +15,19 @@ import { site } from "@/lib/site";
  * sees while keeping the real validation in lib/env.ts under its own test.
  */
 const envMock = vi.hoisted(() => ({
-  RESEND_API_KEY: undefined as string | undefined,
-  CONTACT_TO_EMAIL: undefined as string | undefined,
-  CONTACT_FROM_EMAIL: undefined as string | undefined,
+  WEB3FORMS_ACCESS_KEY: undefined as string | undefined,
 }));
 vi.mock("@/lib/env", () => ({ env: envMock }));
 
 const send = vi.fn();
-vi.mock("resend", () => ({
-  /* Called with `new`, so this has to be a real function, not an arrow. */
-  Resend: vi.fn(function Resend() {
-    return { emails: { send } };
-  }),
-}));
+vi.stubGlobal("fetch", send);
+
+/** Shapes a Web3Forms reply. */
+const reply = (body: unknown, ok = true) => ({
+  ok,
+  status: ok ? 200 : 422,
+  json: () => Promise.resolve(body),
+});
 
 import { submitContact } from "@/lib/actions";
 
@@ -37,7 +37,8 @@ function formData(overrides: Record<string, string> = {}) {
     name: "Priya Raman",
     email: "priya@example.com",
     projectType: "Internal tool",
-    message: "We need a ticketing system for our support team of twelve people.",
+    message:
+      "We need a ticketing system for our support team of twelve people.",
     ...overrides,
   };
 
@@ -49,16 +50,18 @@ function formData(overrides: Record<string, string> = {}) {
 const submit = (overrides?: Record<string, string>) =>
   submitContact({ status: "idle" }, formData(overrides));
 
-/** The payload handed to Resend on the most recent send, typed for assertions. */
-type SentEmail = { from: string; to: string; replyTo: string; subject: string; text: string };
-const lastEmail = () => send.mock.calls.at(-1)?.[0] as SentEmail;
+/** The JSON body posted on the most recent send, typed for assertions. */
+type SentPayload = Record<string, string>;
+const lastPayload = () =>
+  JSON.parse(
+    (send.mock.calls.at(-1)?.[1] as { body: string }).body,
+  ) as SentPayload;
+const lastUrl = () => send.mock.calls.at(-1)?.[0] as string;
 
 beforeEach(() => {
   vi.clearAllMocks();
-  envMock.RESEND_API_KEY = "re_test_key";
-  envMock.CONTACT_TO_EMAIL = undefined;
-  envMock.CONTACT_FROM_EMAIL = undefined;
-  send.mockResolvedValue({ error: null });
+  envMock.WEB3FORMS_ACCESS_KEY = "3f1a2b4c-5d6e-4f70-8a91-b2c3d4e5f607";
+  send.mockResolvedValue(reply({ success: true }));
   /* The action logs failures deliberately; keep the test output readable. */
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -114,8 +117,8 @@ describe("honeypot", () => {
 });
 
 describe("delivery", () => {
-  it("falls back to a direct email address when the API key is missing", async () => {
-    envMock.RESEND_API_KEY = undefined;
+  it("falls back to a direct email address when the access key is missing", async () => {
+    envMock.WEB3FORMS_ACCESS_KEY = undefined;
 
     const result = await submit();
 
@@ -124,51 +127,66 @@ describe("delivery", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("sets replyTo to the enquirer so a reply reaches them, not Resend", async () => {
+  it("posts to the Web3Forms endpoint from the server", async () => {
+    await submit();
+
+    expect(lastUrl()).toBe("https://api.web3forms.com/submit");
+  });
+
+  it("sets replyto to the enquirer so a reply reaches them", async () => {
     await submit({ email: "priya@example.com" });
 
-    expect(send).toHaveBeenCalledWith(
-      expect.objectContaining({ replyTo: "priya@example.com" }),
-    );
+    expect(lastPayload().replyto).toBe("priya@example.com");
   });
 
-  it("carries the submitted details into the email body", async () => {
+  it("sends the access key, never leaving it to the browser", async () => {
+    await submit();
+
+    expect(lastPayload().access_key).toBe(envMock.WEB3FORMS_ACCESS_KEY);
+  });
+
+  it("carries the submitted details into the payload", async () => {
     await submit({ company: "Northwind", budget: "₹2–4L" });
 
-    const { text, subject } = lastEmail();
-    expect(subject).toContain("Priya Raman");
-    expect(text).toContain("Northwind");
-    expect(text).toContain("₹2–4L");
-    expect(text).toContain("ticketing system");
+    const payload = lastPayload();
+    expect(payload.subject).toContain("Priya Raman");
+    expect(payload.Company).toBe("Northwind");
+    expect(payload.Budget).toBe("₹2–4L");
+    expect(payload.Message).toContain("ticketing system");
   });
 
-  it("marks omitted optional fields rather than printing 'undefined'", async () => {
+  it("marks omitted optional fields rather than sending 'undefined'", async () => {
     await submit();
 
-    const { text } = lastEmail();
-    expect(text).not.toContain("undefined");
-    expect(text).toContain("Company:   —");
+    const payload = lastPayload();
+    expect(Object.values(payload)).not.toContain(undefined);
+    expect(payload.Company).toBe("—");
+    expect(payload.Timeline).toBe("—");
   });
 
-  it("routes to the configured addresses when they are set", async () => {
-    envMock.CONTACT_TO_EMAIL = "enquiries@aaknav.dev";
-    envMock.CONTACT_FROM_EMAIL = "noreply@aaknav.dev";
+  it("treats a success:false body as a failure even on a 200", async () => {
+    send.mockResolvedValue(reply({ success: false, message: "invalid key" }));
 
-    await submit();
+    const result = await submit();
 
-    expect(lastEmail().to).toBe("enquiries@aaknav.dev");
-    expect(lastEmail().from).toBe("noreply@aaknav.dev");
+    expect(result.status).toBe("error");
+    expect(result.message).toContain(site.email);
   });
 
-  it("falls back to the site address when no recipient is configured", async () => {
-    await submit();
+  it("surfaces a non-ok response as an error state", async () => {
+    send.mockResolvedValue(reply({ success: false }, false));
 
-    expect(lastEmail().to).toBe(site.email);
-    expect(lastEmail().from).toBe("enquiries@resend.dev");
+    const result = await submit();
+
+    expect(result.status).toBe("error");
   });
 
-  it("surfaces a rejection from Resend as an error state", async () => {
-    send.mockResolvedValue({ error: { message: "rate limited" } });
+  it("survives a body that is not JSON at all", async () => {
+    send.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.reject(new Error("not json")),
+    });
 
     const result = await submit();
 

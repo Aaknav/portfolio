@@ -9,7 +9,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
  * Validation happens once at import, so each case re-imports the module with a
  * different process.env.
  */
-const KEYS = ["RESEND_API_KEY", "CONTACT_TO_EMAIL", "CONTACT_FROM_EMAIL"] as const;
+const KEYS = ["WEB3FORMS_ACCESS_KEY"] as const;
 
 async function loadEnv(vars: Partial<Record<(typeof KEYS)[number], string>>) {
   vi.resetModules();
@@ -33,47 +33,31 @@ describe("optionality", () => {
   it("boots with nothing configured at all", async () => {
     const env = await loadEnv({});
 
-    expect(env.RESEND_API_KEY).toBeUndefined();
-    expect(env.CONTACT_TO_EMAIL).toBeUndefined();
+    expect(env.WEB3FORMS_ACCESS_KEY).toBeUndefined();
   });
 
   it("treats the empty strings in .env.example as unset, not as values", async () => {
-    const env = await loadEnv({
-      RESEND_API_KEY: "",
-      CONTACT_TO_EMAIL: "",
-      CONTACT_FROM_EMAIL: "",
-    });
+    const env = await loadEnv({ WEB3FORMS_ACCESS_KEY: "" });
 
-    expect(env.RESEND_API_KEY).toBeUndefined();
-    expect(env.CONTACT_TO_EMAIL).toBeUndefined();
-    expect(env.CONTACT_FROM_EMAIL).toBeUndefined();
+    expect(env.WEB3FORMS_ACCESS_KEY).toBeUndefined();
   });
 });
 
 describe("rejects misconfiguration", () => {
-  it("rejects a key that is not a Resend key", async () => {
-    await expectRejection({ RESEND_API_KEY: "sk_live_not_resend" });
+  it("rejects a key that is not a UUID", async () => {
+    await expectRejection({ WEB3FORMS_ACCESS_KEY: "not-a-uuid" });
   });
 
-  it("rejects a malformed delivery address", async () => {
-    await expectRejection({ CONTACT_TO_EMAIL: "abhiz@" });
-  });
-
-  it("rejects a malformed sender address", async () => {
-    await expectRejection({ CONTACT_FROM_EMAIL: "noreply" });
+  it("rejects a Resend key pasted into the Web3Forms slot", async () => {
+    await expectRejection({ WEB3FORMS_ACCESS_KEY: "re_abc123" });
   });
 });
 
 describe("accepts a valid configuration", () => {
-  it("passes a complete, well-formed environment through", async () => {
-    const env = await loadEnv({
-      RESEND_API_KEY: "re_abc123",
-      CONTACT_TO_EMAIL: "enquiries@aaknav.dev",
-      CONTACT_FROM_EMAIL: "noreply@aaknav.dev",
-    });
+  it("passes a well-formed access key through", async () => {
+    const key = "3f1a2b4c-5d6e-4f70-8a91-b2c3d4e5f607";
+    const env = await loadEnv({ WEB3FORMS_ACCESS_KEY: key });
 
-    expect(env.RESEND_API_KEY).toBe("re_abc123");
-    expect(env.CONTACT_TO_EMAIL).toBe("enquiries@aaknav.dev");
-    expect(env.CONTACT_FROM_EMAIL).toBe("noreply@aaknav.dev");
+    expect(env.WEB3FORMS_ACCESS_KEY).toBe(key);
   });
 });
