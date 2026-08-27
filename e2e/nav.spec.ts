@@ -8,7 +8,10 @@ import { navLinks } from "../lib/site";
  */
 
 test.describe("desktop nav", () => {
-  test("exposes every link and jumps to the section", async ({ page, isMobile }) => {
+  test("exposes every link and jumps to the section", async ({
+    page,
+    isMobile,
+  }) => {
     test.skip(isMobile, "desktop layout only");
     await page.goto("/");
 
@@ -24,8 +27,56 @@ test.describe("desktop nav", () => {
   });
 });
 
+/*
+ * Regression: an anchor whose href already matches the current URL does not
+ * navigate, so nothing scrolls. Every in-page link on the site was therefore
+ * single-use — reach the contact form once, scroll back up, and the button did
+ * nothing on the second press because the hash was still #contact. Clicking
+ * once proves nothing here; the second click is the test.
+ */
+test.describe("in-page anchors", () => {
+  test("scroll to their target every time, not just the first", async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto("/");
+
+    const openMenu = async () => {
+      if (!isMobile) return;
+      await page.getByRole("button", { name: "Open menu" }).click();
+      await expect(page.getByRole("dialog", { name: "Menu" })).toBeVisible();
+    };
+    const scope = () =>
+      isMobile
+        ? page.getByRole("dialog", { name: "Menu" })
+        : page.locator("header");
+
+    for (const name of [/Start a project/, "Work"]) {
+      const reached: number[] = [];
+
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.waitForFunction(() => window.scrollY === 0);
+
+        await openMenu();
+        await scope().getByRole("link", { name }).click();
+
+        await page.waitForFunction(() => window.scrollY > 100, null, {
+          timeout: 5000,
+        });
+        reached.push(await page.evaluate(() => Math.round(window.scrollY)));
+      }
+
+      expect(reached[1], `second click on ${name}`).toBeGreaterThan(100);
+    }
+  });
+});
+
 test.describe("mobile menu", () => {
-  test("opens, traps focus, and closes on Escape", async ({ page, isMobile }) => {
+  test("opens, traps focus, and closes on Escape", async ({
+    page,
+    isMobile,
+  }) => {
     test.skip(!isMobile, "mobile layout only");
     await page.goto("/");
 

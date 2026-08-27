@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { navLinks, site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { scrollToHash } from "@/lib/scroll";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -95,6 +96,9 @@ export function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={(event) => {
+                  if (scrollToHash(link.href)) event.preventDefault();
+                }}
                 className="group relative text-body-sm text-ink-muted transition-colors hover:text-ink"
               >
                 {link.label}
@@ -168,7 +172,10 @@ export function Nav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={() => setOpen(false)}
+                  onClick={(event) => {
+                    setOpen(false);
+                    if (scrollToHash(link.href)) event.preventDefault();
+                  }}
                   className="border-b border-border py-4 font-display text-[1.75rem]"
                 >
                   {link.label}

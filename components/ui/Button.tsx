@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, MouseEvent, ReactNode } from "react";
+import { scrollToHash } from "@/lib/scroll";
 
 type Variant = "primary" | "secondary" | "inverse";
 type Size = "md" | "lg";
@@ -67,8 +70,22 @@ export function ButtonLink({
     );
   }
 
+  const { onClick, ...linkProps } = rest;
+
   return (
-    <Link href={href} className={classes(variant, size, className)} {...rest}>
+    <Link
+      href={href}
+      className={classes(variant, size, className)}
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+        onClick?.(event);
+        /* An anchor to the page you are already on does not navigate, so
+           nothing scrolls. See lib/scroll.ts. */
+        if (!event.defaultPrevented && scrollToHash(href)) {
+          event.preventDefault();
+        }
+      }}
+      {...linkProps}
+    >
       {children}
     </Link>
   );
