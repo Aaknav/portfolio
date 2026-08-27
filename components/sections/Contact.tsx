@@ -62,7 +62,12 @@ export function Contact() {
                 </ol>
               </div>
 
-              <div className="flex flex-col gap-3">
+              {/* Centred until md, matching SectionHeading, so the stacked
+                  layout does not have a centred heading over a left-aligned
+                  block. items-center matters as much as text-center: these are
+                  block-level anchors in a flex column, so without it they
+                  stretch and their underlines run the full width. */}
+              <div className="flex flex-col items-center gap-3 text-center md:items-start md:text-left">
                 <p className="label text-ink-muted">Or reach me directly</p>
                 <a
                   href={mailto()}
