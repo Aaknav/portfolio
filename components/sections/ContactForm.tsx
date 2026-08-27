@@ -22,6 +22,11 @@ const fieldClass =
   "w-full rounded-md border border-border-strong bg-surface px-3 py-2.5 text-body " +
   "text-ink transition-colors placeholder:text-ink-muted/70 focus:border-accent";
 
+/* Selects need room on the right for the native arrow, which otherwise draws
+   straight over the end of the longest option — "As soon as possible" was
+   losing its last letters. */
+const selectClass = `${fieldClass} pr-9`;
+
 /*
  * The message box is where a visitor types their own "before", so it wears the
  * dashed frame the hero's scraps do — the one place the form joins the argument
@@ -182,7 +187,7 @@ export function ContactForm() {
           name="projectType"
           required
           defaultValue={projectTypes[0]}
-          className={fieldClass}
+          className={selectClass}
         >
           {projectTypes.map((type) => (
             <option key={type} value={type}>
@@ -218,7 +223,7 @@ export function ContactForm() {
           Optional — helps me quote
         </legend>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="company">Company</Label>
             <input
@@ -236,7 +241,7 @@ export function ContactForm() {
               id="budget"
               name="budget"
               defaultValue={budgets[0]}
-              className={fieldClass}
+              className={selectClass}
             >
               {budgets.map((budget) => (
                 <option key={budget} value={budget}>
@@ -252,7 +257,7 @@ export function ContactForm() {
               id="timeline"
               name="timeline"
               defaultValue={timelines[0]}
-              className={fieldClass}
+              className={selectClass}
             >
               {timelines.map((timeline) => (
                 <option key={timeline} value={timeline}>
