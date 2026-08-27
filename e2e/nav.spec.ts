@@ -72,6 +72,40 @@ test.describe("in-page anchors", () => {
   });
 });
 
+/*
+ * Regression: every nav link is an in-page anchor, which means nothing on a
+ * page that has no such section. From a case study "#about" resolved to no
+ * element, so the click only wrote a fragment onto the case study's own URL and
+ * the page did not move. Every existing nav test ran on the homepage, where the
+ * sections do exist — which is exactly why none of them saw it.
+ */
+test.describe("nav from a case study", () => {
+  test("sends you back to the homepage section", async ({ page, isMobile }) => {
+    await page.goto("/work/inventive-helpdesk");
+
+    const openMenu = async () => {
+      if (!isMobile) return page.locator("header");
+      await page.getByRole("button", { name: "Open menu" }).click();
+      const sheet = page.getByRole("dialog", { name: "Menu" });
+      await expect(sheet).toBeVisible();
+      return sheet;
+    };
+
+    const scope = await openMenu();
+    const about = scope.getByRole("link", { name: "About" });
+
+    // The href itself has to be absolute off the homepage, not a bare fragment.
+    await expect(about).toHaveAttribute("href", "/#about");
+
+    await about.click();
+
+    await expect(page).toHaveURL(/\/#about$/);
+    await page.waitForFunction(() => window.scrollY > 100, null, {
+      timeout: 5000,
+    });
+  });
+});
+
 test.describe("mobile menu", () => {
   test("opens, traps focus, and closes on Escape", async ({
     page,

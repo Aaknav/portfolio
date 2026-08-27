@@ -5,9 +5,20 @@ import { useEffect, useRef, useState } from "react";
 import { navLinks, site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { usePathname } from "next/navigation";
 import { scrollToHash } from "@/lib/scroll";
 
 export function Nav() {
+  /*
+   * The nav links are in-page anchors, which only mean anything on the page
+   * that has those sections. From a case study, "#about" resolved to no element
+   * and the click did nothing at all — it just wrote a fragment onto the case
+   * study's own URL. Off the homepage they have to point back at it.
+   */
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  const sectionHref = (href: string) => (onHome ? href : `/${href}`);
+
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -95,9 +106,9 @@ export function Nav() {
             {navLinks.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={sectionHref(link.href)}
                 onClick={(event) => {
-                  if (scrollToHash(link.href)) event.preventDefault();
+                  if (onHome && scrollToHash(link.href)) event.preventDefault();
                 }}
                 className="group relative text-body-sm text-ink-muted transition-colors hover:text-ink"
               >
@@ -106,7 +117,9 @@ export function Nav() {
               </Link>
             ))}
             <ThemeToggle />
-            <ButtonLink href="#contact">Get a free quote</ButtonLink>
+            <ButtonLink href={sectionHref("#contact")}>
+              Get a free quote
+            </ButtonLink>
           </nav>
 
           {/* No CTA here: the hero's "Start a project" sits directly below the
@@ -171,10 +184,11 @@ export function Nav() {
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={sectionHref(link.href)}
                   onClick={(event) => {
                     setOpen(false);
-                    if (scrollToHash(link.href)) event.preventDefault();
+                    if (onHome && scrollToHash(link.href))
+                      event.preventDefault();
                   }}
                   className="border-b border-border py-4 font-display text-[1.75rem]"
                 >
@@ -183,7 +197,7 @@ export function Nav() {
               ))}
 
               <ButtonLink
-                href="#contact"
+                href={sectionHref("#contact")}
                 size="lg"
                 className="mt-6"
                 onClick={() => setOpen(false)}
