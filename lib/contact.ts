@@ -91,10 +91,27 @@ export async function sendEnquiry(
   accessKey: string,
 ): Promise<{ delivered: boolean; reason?: string }> {
   try {
+    /*
+     * Sent as form data, not JSON, and that is not a style choice. A JSON body
+     * sets Content-Type: application/json, which is not CORS-safelisted, so the
+     * browser sends a preflight OPTIONS first — and Web3Forms answers it with
+     * no Access-Control-Allow-Origin, so the real request never leaves. Form
+     * data is a simple request: no preflight, which is also exactly how their
+     * own HTML forms post.
+     *
+     * Content-Type is deliberately unset so the browser writes it, with the
+     * multipart boundary it needs.
+     */
+    const form = new FormData();
+    form.append("access_key", accessKey);
+    for (const [field, value] of Object.entries(payload)) {
+      form.append(field, value);
+    }
+
     const response = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ access_key: accessKey, ...payload }),
+      headers: { Accept: "application/json" },
+      body: form,
     });
 
     const body = await response.text();

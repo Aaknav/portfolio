@@ -88,9 +88,29 @@ describe("validateEnquiry", () => {
 describe("sendEnquiry", () => {
   it("posts the access key with the payload", async () => {
     await sendEnquiry({ Name: "Priya" }, KEY);
-    const [url, init] = fetchMock.mock.calls.at(-1) as [string, { body: string }];
+    const [url, init] = fetchMock.mock.calls.at(-1) as [
+      string,
+      { body: FormData; headers: Record<string, string> },
+    ];
     expect(url).toBe("https://api.web3forms.com/submit");
-    expect(JSON.parse(init.body)).toMatchObject({ access_key: KEY, Name: "Priya" });
+    expect(init.body.get("access_key")).toBe(KEY);
+    expect(init.body.get("Name")).toBe("Priya");
+  });
+
+  /*
+   * Pinning the transport, not the style: a JSON body sets a Content-Type that
+   * is not CORS-safelisted, the browser preflights it, and Web3Forms does not
+   * answer the preflight — so the request never leaves. Form data avoids that,
+   * and only if the browser is left to set Content-Type itself.
+   */
+  it("sends form data and lets the browser set Content-Type", async () => {
+    await sendEnquiry({ Name: "Priya" }, KEY);
+    const [, init] = fetchMock.mock.calls.at(-1) as [
+      string,
+      { body: unknown; headers: Record<string, string> },
+    ];
+    expect(init.body).toBeInstanceOf(FormData);
+    expect(init.headers["Content-Type"]).toBeUndefined();
   });
 
   it("reports delivery on a success body", async () => {
