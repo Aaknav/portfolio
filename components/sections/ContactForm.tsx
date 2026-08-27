@@ -18,8 +18,15 @@ const FIELD_LABELS: Record<string, string> = {
   message: "What are you trying to build?",
 };
 
+/*
+ * h-11 rather than vertical padding: an <input> and a <select> given identical
+ * padding still come out different heights, because each browser applies its
+ * own intrinsic line box to a select. Setting the height explicitly is what
+ * makes a row of mixed controls line up. 44px is also a comfortable touch
+ * target.
+ */
 const fieldClass =
-  "w-full rounded-md border border-border-strong bg-surface px-3 py-2.5 text-body " +
+  "h-11 w-full rounded-md border border-border-strong bg-surface px-3 text-body " +
   "text-ink transition-colors placeholder:text-ink-muted/70 focus:border-accent";
 
 /* Selects need room on the right for the native arrow, which otherwise draws
