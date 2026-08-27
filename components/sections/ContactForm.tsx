@@ -1,10 +1,14 @@
 "use client";
 
-import { useActionState } from "react";
-import { submitContact, type ContactState } from "@/lib/actions";
+import { useState } from "react";
+import {
+  sendEnquiry,
+  validateEnquiry,
+  type EnquiryErrors,
+} from "@/lib/contact";
+import { env } from "@/lib/env";
+import { site } from "@/lib/site";
 import { Button } from "@/components/ui/Button";
-
-const initialState: ContactState = { status: "idle" };
 
 /* The summary names fields the way their labels do, not the way the schema
    does. Keep in step with the labels below. */
@@ -90,40 +94,84 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 export function ContactForm() {
-  const [state, formAction, pending] = useActionState(
-    submitContact,
-    initialState,
+  /*
+   * Submits from the browser rather than through a Server Action: Web3Forms is
+   * behind Cloudflare, which answers a server-side POST with a challenge page
+   * and a 403. See lib/contact.ts.
+   */
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle",
   );
+  const [errors, setErrors] = useState<EnquiryErrors>({});
+  const [message, setMessage] = useState<string | null>(null);
+  const pending = status === "sending";
 
-  if (state.status === "success") {
-    return (
-      <div
-        role="status"
-        className="rounded-xl border border-border bg-surface p-8"
-      >
-        <p className="text-display-md">Message sent.</p>
-        <p className="mt-3 text-body text-ink-muted">{state.message}</p>
-      </div>
-    );
-  }
+  /* onSubmit wants a void return, so the async work is kicked off inside a
+     synchronous handler rather than handing React a promise it will not await. */
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void submit(event.currentTarget);
+  };
+
+  const submit = async (form: HTMLFormElement) => {
+    const result = validateEnquiry(new FormData(form));
+
+    if (!result.ok) {
+      setErrors(result.errors);
+      setStatus("error");
+      setMessage("Please check the fields below.");
+      return;
+    }
+
+    setErrors({});
+    setStatus("sending");
+
+    /* A bot that filled the honeypot is told it worked and nothing is sent. */
+    if (result.trap) {
+      setStatus("sent");
+      return;
+    }
+
+    const key = env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    if (!key) {
+      setStatus("error");
+      setMessage(
+        `Something went wrong sending that. Please email me directly at ${site.email}.`,
+      );
+      return;
+    }
+
+    const { delivered, reason } = await sendEnquiry(result.payload, key);
+    if (!delivered) {
+      console.error("Enquiry was not delivered:", reason);
+      setStatus("error");
+      setMessage(
+        `Something went wrong sending that. Please email me directly at ${site.email}.`,
+      );
+      return;
+    }
+
+    form.reset();
+    setStatus("sent");
+  };
 
   return (
-    <form action={formAction} className="flex flex-col gap-5" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       {/*
         The summary belongs at the top of the form, not above the submit button
         where it used to sit: it told people to "check the fields below" while
         every field was above it. Naming the fields — and linking to them — beats
         making someone scan a nine-field form for red text.
       */}
-      {state.status === "error" && state.message ? (
+      {status === "error" && message ? (
         <div
           role="alert"
           className="flex flex-col gap-2 border-l-2 border-danger bg-surface p-4"
         >
-          <p className="text-body-sm text-danger">{state.message}</p>
-          {state.errors ? (
+          <p className="text-body-sm text-danger">{message}</p>
+          {Object.keys(errors).length > 0 ? (
             <ul className="flex flex-wrap gap-x-4 gap-y-1">
-              {Object.keys(state.errors).map((field) => (
+              {Object.keys(errors).map((field) => (
                 <li key={field}>
                   <a
                     href={`#${field}`}
@@ -163,10 +211,10 @@ export function ContactForm() {
             required
             autoComplete="name"
             className={fieldClass}
-            aria-invalid={!!state.errors?.name}
-            aria-describedby={state.errors?.name ? "name-error" : undefined}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? "name-error" : undefined}
           />
-          <FieldError id="name-error" message={state.errors?.name} />
+          <FieldError id="name-error" message={errors.name} />
         </div>
 
         <div>
@@ -178,10 +226,10 @@ export function ContactForm() {
             required
             autoComplete="email"
             className={fieldClass}
-            aria-invalid={!!state.errors?.email}
-            aria-describedby={state.errors?.email ? "email-error" : undefined}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
           />
-          <FieldError id="email-error" message={state.errors?.email} />
+          <FieldError id="email-error" message={errors.email} />
         </div>
       </div>
 
@@ -202,10 +250,7 @@ export function ContactForm() {
             </option>
           ))}
         </select>
-        <FieldError
-          id="projectType-error"
-          message={state.errors?.projectType}
-        />
+        <FieldError id="projectType-error" message={errors.projectType} />
       </div>
 
       <div>
@@ -217,10 +262,10 @@ export function ContactForm() {
           rows={6}
           className={messageClass}
           placeholder="The problem you’re trying to solve, roughly what you have in mind, and anything already in place."
-          aria-invalid={!!state.errors?.message}
-          aria-describedby={state.errors?.message ? "message-error" : undefined}
+          aria-invalid={!!errors.message}
+          aria-describedby={errors.message ? "message-error" : undefined}
         />
-        <FieldError id="message-error" message={state.errors?.message} />
+        <FieldError id="message-error" message={errors.message} />
       </div>
 
       {/* The three questions that sharpen a quote but must never block one.

@@ -6,7 +6,7 @@ import { defineConfig, devices } from "@playwright/test";
  * The dev server runs on a dedicated port so a `npm run dev` you already have
  * open on 3000 is never torn down or scribbled on by a test run.
  *
- * WEB3FORMS_ACCESS_KEY is forced empty for the server under test: the contact
+ * NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY is forced empty for the server under test: the contact
  * action only reaches Web3Forms once zod has passed, and with no key it bails
  * before the network. A test can never send a real enquiry.
  */
@@ -74,7 +74,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
     env: {
-      WEB3FORMS_ACCESS_KEY: "",
+      NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: "",
       NEXT_TELEMETRY_DISABLED: "1",
     },
   },
