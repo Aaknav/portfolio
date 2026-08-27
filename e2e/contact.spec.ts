@@ -50,15 +50,6 @@ test("rejects a malformed email but keeps valid input", async ({ page }) => {
   await expect(page.getByText("Enter your name")).toBeHidden();
 });
 
-test("rejects a too-short message", async ({ page }) => {
-  await page.getByLabel("Name", { exact: true }).fill("Test Person");
-  await page.getByLabel("Email", { exact: true }).fill("test@example.com");
-  await page.getByLabel("What are you trying to build?").fill("too short");
-
-  await page.getByRole("button", { name: "Send enquiry" }).click();
-
-  await expect(page.getByText(/Tell me a little more/)).toBeVisible();
-});
 
 test("the honeypot stays hidden from people", async ({ page }) => {
   const honeypot = page.locator("#website");

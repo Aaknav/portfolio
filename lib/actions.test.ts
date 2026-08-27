@@ -26,7 +26,9 @@ vi.stubGlobal("fetch", send);
 const reply = (body: unknown, ok = true) => ({
   ok,
   status: ok ? 200 : 422,
-  json: () => Promise.resolve(body),
+  /* The action reads the body as text and parses it itself, so that an edge
+     rejection — which arrives as HTML — can be logged rather than discarded. */
+  text: () => Promise.resolve(JSON.stringify(body)),
 });
 
 import { submitContact } from "@/lib/actions";
@@ -82,15 +84,22 @@ describe("validation", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("rejects a message under 20 characters", async () => {
-    const result = await submit({ message: "call me" });
+  it("rejects an empty message", async () => {
+    const result = await submit({ message: "   " });
 
-    expect(result.errors?.message).toMatch(/20 characters/);
+    expect(result.errors?.message).toBe("Tell me what you need");
     expect(send).not.toHaveBeenCalled();
   });
 
+  it("accepts a short message, since a short one is still an enquiry", async () => {
+    const result = await submit({ message: "call me" });
+
+    expect(result.status).toBe("success");
+    expect(send).toHaveBeenCalledOnce();
+  });
+
   it("reports every invalid field at once, not just the first", async () => {
-    const result = await submit({ name: "", email: "nope", message: "hi" });
+    const result = await submit({ name: "", email: "nope", message: "" });
 
     expect(Object.keys(result.errors ?? {}).sort()).toEqual([
       "email",
@@ -181,11 +190,11 @@ describe("delivery", () => {
     expect(result.status).toBe("error");
   });
 
-  it("survives a body that is not JSON at all", async () => {
+  it("treats a non-JSON body, such as an edge block page, as a failure", async () => {
     send.mockResolvedValue({
       ok: true,
       status: 200,
-      json: () => Promise.reject(new Error("not json")),
+      text: () => Promise.resolve("<html>blocked by the edge</html>"),
     });
 
     const result = await submit();

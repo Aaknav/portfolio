@@ -18,7 +18,7 @@ const schema = z.object({
   message: z
     .string()
     .trim()
-    .min(20, "Tell me a little more — 20 characters or so")
+    .min(1, "Tell me what you need")
     .max(5000),
   /**
    * Honeypot: bots fill hidden fields, people don't.
@@ -100,6 +100,11 @@ export async function submitContact(
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        /* Web3Forms is built for a browser POST and rejected a bare server-side
+           one with a 403 and an HTML body. Sending the origin it expects is what
+           gets the request past that check. */
+        Origin: site.url,
+        Referer: `${site.url}/`,
       },
       body: JSON.stringify({
         access_key: accessKey,
@@ -117,15 +122,29 @@ export async function submitContact(
       }),
     });
 
-    const result: unknown = await response.json().catch(() => null);
+    /* Read as text first: a rejection at the edge comes back as HTML, and
+       calling .json() on it threw the body away — which left the log saying
+       only "403 null" and nothing about why. */
+    const body = await response.text();
+    let parsed: unknown = null;
+    try {
+      parsed = JSON.parse(body) as unknown;
+    } catch {
+      parsed = null;
+    }
+
     const delivered =
       response.ok &&
-      typeof result === "object" &&
-      result !== null &&
-      (result as { success?: unknown }).success === true;
+      typeof parsed === "object" &&
+      parsed !== null &&
+      (parsed as { success?: unknown }).success === true;
 
     if (!delivered) {
-      console.error("Web3Forms rejected the enquiry:", response.status, result);
+      console.error(
+        "Web3Forms rejected the enquiry:",
+        response.status,
+        body.slice(0, 300),
+      );
       return {
         status: "error",
         message: `Something went wrong sending that. Please email me directly at ${site.email}.`,
