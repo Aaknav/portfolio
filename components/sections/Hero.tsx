@@ -1,80 +1,85 @@
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/Button";
 import { HeroStagger } from "@/components/motion/Reveal";
-import { BeforeAfter } from "@/components/work/BeforeAfter";
-import { featuredProjects } from "@/data/projects";
 
 /**
- * The hero is the thesis, stated once: nobody buys a ticketing system, they buy
- * the end of a mess. The headline crosses the seam the diptych below draws, so
- * the sentence and the picture make the same argument.
+ * One sentence, one button, and the objection handled underneath it.
+ *
+ * The previous hero opened with a diptych of a client's mess — a good argument
+ * for a design-led site, and the wrong opening for a business owner deciding
+ * whether to trust a stranger with money. They want to know what you do, what
+ * it costs them to ask, and where to click. The three cards say what they can
+ * buy without making them scroll to find out.
+ *
+ * "No obligation" and the reply window are doing the real work here. The fear
+ * is not the price, it is being pulled into a sales call.
  */
-export function Hero() {
-  const flagship = featuredProjects[0];
+const offers = [
+  {
+    name: "Websites",
+    body: "Fast, credible, and easy for you to update yourself.",
+  },
+  {
+    name: "Business tools",
+    body: "Ticketing, dashboards and internal tools that replace a spreadsheet and a stack of tabs.",
+  },
+  {
+    name: "Ongoing support",
+    body: "I stay available after launch for fixes and follow-on work.",
+  },
+];
 
+export function Hero() {
   return (
-    <section className="px-6 pt-20 pb-10 md:pt-36 md:pb-20">
-      <div className="mx-auto max-w-6xl text-center md:text-left">
+    <section className="px-6 pt-20 pb-14 md:pt-32 md:pb-20">
+      <div className="mx-auto max-w-6xl">
         <HeroStagger index={0}>
-          <p className="label text-ink-muted">
-            Full-stack development · {site.location}
-          </p>
+          <p className="label text-accent">Full-stack developer · {site.location}</p>
         </HeroStagger>
 
         <HeroStagger index={1}>
-          <h1 className="mx-auto mt-6 max-w-[19ch] text-[2.25rem] leading-[1.04] tracking-[-0.035em] md:mx-0 md:text-display-xl">
-            Before, it lived in a shared inbox.{" "}
-            <span className="text-accent">After, it had an owner.</span>
+          <h1 className="mt-5 max-w-[18ch] text-[2.125rem] leading-[1.12] md:text-display-xl">
+            Software that runs your business, built by one person.
           </h1>
         </HeroStagger>
 
         <HeroStagger index={2}>
-          <p className="measure mx-auto mt-6 text-body-lg text-ink-muted md:mx-0">
-            I&rsquo;m {site.name} — I build the systems small businesses run on,
-            and the websites that bring people to them. Every project below
-            started as something that was not working.
+          <p className="measure mt-5 text-body-lg text-ink-muted">
+            Websites, booking systems, ticketing tools and dashboards for small
+            businesses — designed, built and looked after by me.
           </p>
         </HeroStagger>
 
         <HeroStagger index={3}>
-          <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-start">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <ButtonLink href="#contact" size="lg">
-              Start a project
-              <span aria-hidden="true">→</span>
+              Get a free quote
             </ButtonLink>
             <ButtonLink href="#work" variant="secondary" size="lg">
-              See the before and after
+              See my work
             </ButtonLink>
           </div>
         </HeroStagger>
 
-        {site.availability ? (
-          <HeroStagger index={4}>
-            <p className="mt-6 flex items-center justify-center gap-2 text-body-sm text-ink-muted md:justify-start">
-              <span
-                aria-hidden="true"
-                className="size-2 rounded-full bg-success"
-              />
-              {site.availability}
-            </p>
-          </HeroStagger>
-        ) : null}
+        <HeroStagger index={4}>
+          <p className="mt-5 text-body-sm text-ink-muted">
+            Reply within two days · No obligation · One project at a time
+          </p>
+        </HeroStagger>
 
-        {flagship ? (
-          <HeroStagger index={5}>
-            <div className="mt-12 text-left md:mt-14">
-              <BeforeAfter project={flagship} />
-              {/* Proof points come from the project, never a literal: the
-                  flagship is whichever entry is featured first, and a hardcoded
-                  test count would follow the slot rather than the project. */}
-              {flagship.proofPoints?.length ? (
-                <p className="mt-4 text-body-sm text-ink-muted">
-                  {flagship.proofPoints.join(" · ")}
-                </p>
-              ) : null}
-            </div>
-          </HeroStagger>
-        ) : null}
+        <HeroStagger index={5}>
+          <ul className="mt-12 grid gap-4 md:mt-14 md:grid-cols-3">
+            {offers.map((offer) => (
+              <li
+                key={offer.name}
+                className="rounded-xl bg-surface p-5 md:p-6"
+              >
+                <p className="text-body font-semibold text-ink">{offer.name}</p>
+                <p className="mt-1.5 text-body-sm text-ink-muted">{offer.body}</p>
+              </li>
+            ))}
+          </ul>
+        </HeroStagger>
       </div>
     </section>
   );

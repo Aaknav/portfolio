@@ -106,7 +106,7 @@ export function Nav() {
               </Link>
             ))}
             <ThemeToggle />
-            <ButtonLink href="#contact">Start a project</ButtonLink>
+            <ButtonLink href="#contact">Get a free quote</ButtonLink>
           </nav>
 
           {/* No CTA here: the hero's "Start a project" sits directly below the
@@ -188,7 +188,7 @@ export function Nav() {
                 className="mt-6"
                 onClick={() => setOpen(false)}
               >
-                Start a project <span aria-hidden="true">→</span>
+                Get a free quote <span aria-hidden="true">→</span>
               </ButtonLink>
             </nav>
           </div>

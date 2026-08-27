@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { site } from "@/lib/site";
 import { env } from "@/lib/env";
 import { MotionProvider } from "@/components/motion/MotionProvider";
@@ -7,27 +7,12 @@ import { BackToTop } from "@/components/ui/BackToTop";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-/* Bricolage carries every statement on the site; Plex Sans carries the reading;
-   Plex Mono carries the labels that key the before/after sides. */
-const bricolage = Bricolage_Grotesque({
+/* One family. Inter is deliberately unremarkable — a business owner reading
+   this should be thinking about their problem, not the typography. */
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-bricolage",
-  weight: ["600", "800"],
-});
-
-const plexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-plex-sans",
-  weight: ["400", "500", "600"],
-});
-
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-plex-mono",
-  weight: ["400", "500"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -104,7 +89,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${plexSans.variable} ${plexMono.variable}`}
+      className={inter.variable}
       /* The script below stamps data-theme on this element before React runs,
          so the server HTML and the hydrated tree disagree about it by design. */
       suppressHydrationWarning

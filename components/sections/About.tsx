@@ -33,27 +33,15 @@ export function About() {
           <SectionHeading
             id="about-heading"
             eyebrow="About"
-            title="I was on the using end first."
+            title="Who you’d be working with"
           />
         </Reveal>
-
         <Reveal delay={0.05}>
-          <div className="mt-8 grid gap-px border border-border bg-border sm:grid-cols-2 md:mt-10">
-            <div className="flex flex-col gap-1.5 bg-bg p-5 md:p-6">
-              <p className="label text-before-ink">Used the tools</p>
-              <p className="text-display-sm text-ink-muted">Software Analyst</p>
-              <p className="text-body-sm text-before-ink">
-                Capgemini Cloud Operations · two and a half years
-              </p>
-            </div>
-            <div className="flex flex-col gap-1.5 bg-surface p-5 md:p-6">
-              <p className="label text-accent">Built the tools</p>
-              <p className="text-display-sm text-ink">{site.role}</p>
-              <p className="text-body-sm text-ink-muted">
-                Independent · {site.location}
-              </p>
-            </div>
-          </div>
+          <p className="measure mt-6 text-body-lg text-ink-muted">
+            Two and a half years on Capgemini&rsquo;s Cloud Operations team,
+            then independent in Pune. I write the whole thing — interface,
+            server, database and deploy.
+          </p>
         </Reveal>
 
         {/* items-center, not items-start: the portrait is taller than two
@@ -99,8 +87,8 @@ export function About() {
                 does.
               </p>
               <p>
-                I joined Inventive Business Solutions as a Business Developer and
-                found a problem worth solving: customer issues were arriving
+                I joined Inventive Business Solutions as a Business Developer
+                and found a problem worth solving: customer issues were arriving
                 through email threads and phone calls, with no way to see what
                 was open, who owned it, or what had gone quiet. Inventive
                 Helpdesk is what replaced that.

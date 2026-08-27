@@ -15,7 +15,7 @@ test.describe("homepage", () => {
 
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toBeVisible();
-    await expect(h1).toContainText("Before, it lived in a shared inbox");
+    await expect(h1).toContainText("Software that runs your business");
   });
 
   test("contains every section the nav links to", async ({ page }) => {

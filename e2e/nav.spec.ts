@@ -51,7 +51,7 @@ test.describe("in-page anchors", () => {
         ? page.getByRole("dialog", { name: "Menu" })
         : page.locator("header");
 
-    for (const name of [/Start a project/, "Work"]) {
+    for (const name of [/Get a free quote/, "Work"]) {
       const reached: number[] = [];
 
       for (let attempt = 0; attempt < 2; attempt += 1) {
