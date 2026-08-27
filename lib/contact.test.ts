@@ -83,6 +83,16 @@ describe("validateEnquiry", () => {
     const result = validateEnquiry(form({ email: "priya@example.com" }));
     expect(result.ok && !result.trap && result.payload.replyto).toBe("priya@example.com");
   });
+
+  /* Web3Forms keys its template and its spam checks off these exact names. */
+  it("uses the field names Web3Forms recognises", () => {
+    const result = validateEnquiry(form());
+    if (!result.ok || result.trap) throw new Error("expected a payload");
+
+    expect(result.payload.name).toBe("Priya Raman");
+    expect(result.payload.email).toBe("priya@example.com");
+    expect(result.payload.message).toContain("ticketing system");
+  });
 });
 
 describe("sendEnquiry", () => {

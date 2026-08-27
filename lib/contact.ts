@@ -64,17 +64,24 @@ export function validateEnquiry(formData: FormData): Validated {
   return {
     ok: true,
     trap: false,
+    /*
+     * name, email and message are Web3Forms' own field names, not a style
+     * choice: they drive its email template and its spam checks, and anything
+     * else is treated as an unlabelled extra. Sending "Name" and "Message"
+     * instead meant the submission arrived as a bag of unknown fields.
+     */
     payload: {
       subject: `New enquiry — ${data.projectType} — ${data.name}`,
+      from_name: "Aaknav website",
       /* So a reply in the mail client reaches the enquirer, not nobody. */
       replyto: data.email,
-      Name: data.name,
-      Email: data.email,
+      name: data.name,
+      email: data.email,
+      message: data.message,
       Company: data.company ?? "—",
       "Project type": data.projectType,
       Budget: data.budget ?? "—",
       Timeline: data.timeline ?? "—",
-      Message: data.message,
     },
   };
 }
