@@ -21,7 +21,7 @@ test("an empty submission reports each missing field", async ({ page }) => {
 
   await expect(page.getByText("Enter your name")).toBeVisible();
   await expect(page.getByText("Enter a valid email address")).toBeVisible();
-  await expect(page.getByText(/Tell me a little more/)).toBeVisible();
+  await expect(page.getByText("Tell me what you need")).toBeVisible();
 
   // Scoped to the form: Next injects its own role="alert" route announcer.
   await expect(page.locator("form [role='alert']")).toContainText(
