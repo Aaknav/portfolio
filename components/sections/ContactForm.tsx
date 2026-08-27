@@ -22,6 +22,21 @@ const fieldClass =
   "w-full rounded-md border border-border-strong bg-surface px-3 py-2.5 text-body " +
   "text-ink transition-colors placeholder:text-ink-muted/70 focus:border-accent";
 
+/*
+ * The message box is where a visitor types their own "before", so it wears the
+ * dashed frame the hero's scraps do — the one place the form joins the argument
+ * the rest of the page makes.
+ *
+ * Dashed, but at --border-strong rather than --before-line. This is an input
+ * boundary, so WCAG 1.4.11 wants 3:1 against the surface behind it, and
+ * --before-line measures about 1.9:1 on --bg. The dashes carry the reference;
+ * the weight keeps it usable.
+ */
+const messageClass =
+  "w-full resize-y rounded-md border border-dashed border-border-strong bg-bg " +
+  "px-3 py-2.5 text-body text-ink transition-colors " +
+  "placeholder:text-ink-muted/70 focus:border-solid focus:border-accent";
+
 const projectTypes = [
   "Business website",
   "Custom web application",
@@ -45,21 +60,10 @@ const timelines = [
   "Just exploring",
 ];
 
-function Label({
-  htmlFor,
-  children,
-  optional,
-}: {
-  htmlFor: string;
-  children: string;
-  optional?: boolean;
-}) {
+function Label({ htmlFor, children }: { htmlFor: string; children: string }) {
   return (
     <label htmlFor={htmlFor} className="mb-2 block text-body-sm text-ink">
       {children}
-      {optional ? (
-        <span className="ml-1.5 text-ink-muted">(optional)</span>
-      ) : null}
     </label>
   );
 }
@@ -134,6 +138,9 @@ export function ContactForm() {
         />
       </div>
 
+      {/* Required path first and short: who you are, what you need, what is
+          wrong. Everything optional sits below the message, so the form reads
+          as four questions rather than seven. */}
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <Label htmlFor="name">Name</Label>
@@ -166,80 +173,27 @@ export function ContactForm() {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="company" optional>
-            Company
-          </Label>
-          <input
-            id="company"
-            name="company"
-            type="text"
-            autoComplete="organization"
-            className={fieldClass}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="projectType">What do you need?</Label>
-          {/* Native select on purpose — faster and more accessible on mobile
-              than a JS-built dropdown. */}
-          <select
-            id="projectType"
-            name="projectType"
-            required
-            defaultValue={projectTypes[0]}
-            className={fieldClass}
-          >
-            {projectTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-          <FieldError
-            id="projectType-error"
-            message={state.errors?.projectType}
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="budget" optional>
-            Budget
-          </Label>
-          <select
-            id="budget"
-            name="budget"
-            defaultValue={budgets[0]}
-            className={fieldClass}
-          >
-            {budgets.map((budget) => (
-              <option key={budget} value={budget}>
-                {budget}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label htmlFor="timeline" optional>
-            Timeline
-          </Label>
-          <select
-            id="timeline"
-            name="timeline"
-            defaultValue={timelines[0]}
-            className={fieldClass}
-          >
-            {timelines.map((timeline) => (
-              <option key={timeline} value={timeline}>
-                {timeline}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div>
+        <Label htmlFor="projectType">What do you need?</Label>
+        {/* Native select on purpose — faster and more accessible on mobile
+            than a JS-built dropdown. */}
+        <select
+          id="projectType"
+          name="projectType"
+          required
+          defaultValue={projectTypes[0]}
+          className={fieldClass}
+        >
+          {projectTypes.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+        <FieldError
+          id="projectType-error"
+          message={state.errors?.projectType}
+        />
       </div>
 
       <div>
@@ -249,7 +203,7 @@ export function ContactForm() {
           name="message"
           required
           rows={6}
-          className={`${fieldClass} resize-y`}
+          className={messageClass}
           placeholder="The problem you’re trying to solve, roughly what you have in mind, and anything already in place."
           aria-invalid={!!state.errors?.message}
           aria-describedby={state.errors?.message ? "message-error" : undefined}
@@ -257,8 +211,66 @@ export function ContactForm() {
         <FieldError id="message-error" message={state.errors?.message} />
       </div>
 
+      {/* The three questions that sharpen a quote but must never block one.
+          Grouped and set apart so the form does not read as seven fields. */}
+      <fieldset className="border border-border p-4 md:p-5">
+        <legend className="label px-2 text-ink-muted">
+          Optional — helps me quote
+        </legend>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <Label htmlFor="company">Company</Label>
+            <input
+              id="company"
+              name="company"
+              type="text"
+              autoComplete="organization"
+              className={fieldClass}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="budget">Budget</Label>
+            <select
+              id="budget"
+              name="budget"
+              defaultValue={budgets[0]}
+              className={fieldClass}
+            >
+              {budgets.map((budget) => (
+                <option key={budget} value={budget}>
+                  {budget}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Label htmlFor="timeline">Timeline</Label>
+            <select
+              id="timeline"
+              name="timeline"
+              defaultValue={timelines[0]}
+              className={fieldClass}
+            >
+              {timelines.map((timeline) => (
+                <option key={timeline} value={timeline}>
+                  {timeline}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
       <div>
-        <Button type="submit" size="lg" disabled={pending}>
+        <Button
+          type="submit"
+          size="lg"
+          disabled={pending}
+          className="w-full sm:w-auto"
+        >
           {pending ? "Sending…" : "Send enquiry"}
         </Button>
       </div>
